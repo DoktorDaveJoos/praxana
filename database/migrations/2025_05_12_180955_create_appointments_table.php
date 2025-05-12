@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('appointments', function (Blueprint $table) {
-            $table->id();
-            $table->string('user_hash', 64);
+            $table->uuid('id');
+            $table->string('patient_hash', 64)->unique();
             $table->dateTime('appointment_date');
             $table->string('treatment_type')->nullable();
             $table->text('symptoms')->nullable();

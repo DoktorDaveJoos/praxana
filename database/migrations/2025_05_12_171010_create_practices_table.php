@@ -11,24 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('patients', function (Blueprint $table) {
+        Schema::create('practices', function (Blueprint $table) {
             $table->uuid('id');
-            $table->string('practice_hash', 64)->unique();
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->date('birth_date')->nullable();
-            $table->string('gender', 10)->nullable();
+            $table->string('name');
             $table->string('address')->nullable();
             $table->string('postal_code', 20)->nullable();
             $table->string('city')->nullable();
             $table->string('country')->nullable()->default('Germany');
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
-            $table->string('occupation')->nullable();
-            $table->string('insurance_type')->nullable();
-            $table->string('insurance_name')->nullable();
-            $table->string('insurance_number')->nullable();
-            $table->string('emergency_contact')->nullable();
             $table->timestamps();
         });
     }
@@ -38,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('patients');
+        Schema::dropIfExists('practices');
     }
 };

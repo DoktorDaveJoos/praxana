@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('medical_histories', function (Blueprint $table) {
-            $table->id();
-            $table->string('user_hash', 64);
+            $table->uuid('id');
+            $table->string('patient_hash', 64)->unique();
             $table->json('diagnoses')->nullable();
             $table->json('allergies')->nullable();
             $table->json('medications')->nullable();
