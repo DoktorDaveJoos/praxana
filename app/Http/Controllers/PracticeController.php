@@ -69,7 +69,7 @@ class PracticeController extends Controller
 
         $practice->update($request->validated());
 
-        return redirect()->route('practices.show', $practice)->with('success', 'Practice updated successfully.');
+        return to_route('practices.show', $practice);
     }
 
     /**

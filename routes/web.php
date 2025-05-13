@@ -19,7 +19,7 @@ Route::middleware([
     Route::controller(PracticeController::class)->group(function () {
         Route::get('/practices/{practice}', 'show')
             ->name('practices.show');
-        Route::put('/practices', 'update')
+        Route::put('/practices/{practice}', 'update')
             ->name('practices.update');
     });
 
