@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PracticeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -11,17 +12,19 @@ Route::middleware([
     'auth',
     ValidateSessionWithWorkOS::class,
 ])->group(function () {
+
+    // Dashboard
     Route::get('dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    // Practices
-    Route::controller(PracticeController::class)->group(function () {
-        Route::get('/practices/{practice}', 'show')
-            ->name('practices.show');
-        Route::put('/practices/{practice}', 'update')
-            ->name('practices.update');
-    });
+    // Practices - (show and update only)
+    Route::resource('practices', PracticeController::class)
+        ->only(['show', 'update']);
+
+    // Patients always under /practices/{practice}/patients
+    Route::resource('practices.patients', PatientController::class)
+        ->only(['index', 'show', 'store', 'update', 'destroy']);
 
 });
 

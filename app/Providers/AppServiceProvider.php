@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Models\Patient;
 use App\Models\Practice;
-use App\Policies\PatientsPolicy;
+use App\Policies\PatientPolicy;
 use App\Policies\PracticePolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -26,6 +26,6 @@ class AppServiceProvider extends ServiceProvider
     {
         // Register the policies
         Gate::policy(Practice::class, PracticePolicy::class);
-        Gate::policy(Patient::class, PatientsPolicy::class);
+        Gate::policy(Patient::class, PatientPolicy::class);
     }
 }

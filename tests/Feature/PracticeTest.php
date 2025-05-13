@@ -10,16 +10,14 @@ use function Pest\Laravel\actingAs;
 uses(RefreshDatabase::class);
 
 test('show practice', function () {
-    $practice = Practice::factory()->create();
-    $user = User::factory()->create([
-        'practice_id' => $practice->id,
-    ]);
+    $user = User::factory()->create();
+    $practice = $user->practice;
 
     actingAs($user);
 
     $this->get(route('practices.show', $practice))
         ->assertInertia(fn (Assert $page) => $page
-            ->component('practice/Show')
+            ->component('practices/Show')
             ->has('practice', fn (Assert $page) => $page
                 ->has('data', fn (Assert $page) => $page
                     ->where('id', $practice->id)
@@ -35,11 +33,19 @@ test('show practice', function () {
         );
 });
 
+test('show practice that does not belong to the user', function () {
+    $user = User::factory()->create();
+    $somePractice = Practice::factory()->create();
+
+    actingAs($user);
+
+    $this->get(route('practices.show', $somePractice))
+        ->assertForbidden();
+});
+
 test('update practice', function () {
-    $practice = Practice::factory()->create();
-    $user = User::factory()->create([
-        'practice_id' => $practice->id,
-    ]);
+    $user = User::factory()->create();
+    $practice = $user->practice;
 
     actingAs($user);
 
@@ -52,4 +58,31 @@ test('update practice', function () {
         'name' => 'Updated Practice',
         'address' => $practice->address,
     ]);
+});
+
+test('update practice with invalid data errors', function () {
+    $user = User::factory()->create();
+    $practice = $user->practice;
+
+    actingAs($user);
+
+    $this->put(route('practices.update', $practice->id), [
+        'name' => 123,
+    ])->assertSessionHasErrors(['name']);
+
+    $this->assertDatabaseMissing('practices', [
+        'id' => $practice->id,
+        'name' => 123,
+    ]);
+});
+
+test('update practice that does not belong to the user', function () {
+    $user = User::factory()->create();
+    $somePractice = Practice::factory()->create();
+
+    actingAs($user);
+
+    $this->put(route('practices.update', $somePractice->id), [
+        'name' => 'Updated Practice',
+    ])->assertForbidden();
 });

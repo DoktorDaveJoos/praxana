@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->uuid('id');
-            $table->string('patient_hash', 64)->unique();
+            $table->string('patient_hash', 64)->index();
             $table->dateTime('appointment_date');
             $table->string('treatment_type')->nullable();
             $table->text('symptoms')->nullable();

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('patients', function (Blueprint $table) {
             $table->uuid('id');
-            $table->string('practice_hash', 64)->unique();
+            $table->string('practice_hash', 64)->index();
             $table->string('first_name');
             $table->string('last_name');
             $table->date('birth_date')->nullable();
@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('insurance_name')->nullable();
             $table->string('insurance_number')->nullable();
             $table->string('emergency_contact')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

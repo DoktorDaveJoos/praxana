@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('medical_histories', function (Blueprint $table) {
             $table->uuid('id');
-            $table->string('patient_hash', 64)->unique();
+            $table->string('patient_hash', 64)->index();
             $table->json('diagnoses')->nullable();
             $table->json('allergies')->nullable();
             $table->json('medications')->nullable();

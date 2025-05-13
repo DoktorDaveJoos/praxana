@@ -6,12 +6,15 @@ use App\Http\Requests\StorePracticeRequest;
 use App\Http\Requests\UpdatePracticeRequest;
 use App\Http\Resources\PracticeResource;
 use App\Models\Practice;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class PracticeController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
@@ -41,11 +44,9 @@ class PracticeController extends Controller
      */
     public function show(Request $request, Practice $practice): Response
     {
-        if ($request->user()->cannot('view', $practice)) {
-            abort(403);
-        }
+        $this->authorize('view', $practice);
 
-        return Inertia::render('practice/Show', [
+        return Inertia::render('practices/Show', [
             'practice' => PracticeResource::make($practice),
         ]);
     }
@@ -63,9 +64,7 @@ class PracticeController extends Controller
      */
     public function update(UpdatePracticeRequest $request, Practice $practice)
     {
-        if ($request->user()->cannot('update', $practice)) {
-            abort(403);
-        }
+        $this->authorize('update', $practice);
 
         $practice->update($request->validated());
 
