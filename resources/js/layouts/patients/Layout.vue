@@ -34,7 +34,6 @@ const sidebarNavItems: NavItem[] = [
     },
 ];
 
-const currentPath = page.props.ziggy?.location ? new URL(page.props.ziggy.location).pathname : '';
 </script>
 
 <template>
