@@ -8,7 +8,7 @@ import { h } from 'vue';
 
 export const columns: ColumnDef<Patient>[] = [
     {
-        accessorKey: 'last_name',
+        accessorKey: 'name',
         enableHiding: false,
         header: ({ column }) => {
             return h(
@@ -21,10 +21,7 @@ export const columns: ColumnDef<Patient>[] = [
             );
         },
         cell: ({ row }) => {
-            const { first_name, last_name } = row.original;
-            const name = `${last_name}, ${first_name}`;
-
-            return h('div', { class: 'text-left font-medium' }, name);
+            return h('div', { class: 'text-left font-medium' }, row.getValue('name'));
         },
     },
     {

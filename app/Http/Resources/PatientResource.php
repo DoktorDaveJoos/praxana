@@ -24,7 +24,7 @@ class PatientResource extends JsonResource
             'last_name' => $this->last_name,
             'name' => sprintf('%s, %s', $this->last_name, $this->first_name),
             'email' => $this->email,
-            'birth_date' => $this->birth_date->format('dd.mm.YYYY'),
+            'birth_date' => $this->birth_date->format('d.m.Y'),
             'gender' => $this->gender,
             'address' => $this->address,
             'postal_code' => $this->postal_code,

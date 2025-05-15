@@ -55,7 +55,7 @@ const submit = () => {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="email">Email address</Label>
+                        <Label for="email">Email</Label>
                         <Input id="email" type="email" class="mt-1 block w-full" v-model="form.email" required autocomplete="username" disabled />
                         <InputError class="mt-2" :message="form.errors.email" />
                     </div>

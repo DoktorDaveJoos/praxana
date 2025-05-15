@@ -31,7 +31,7 @@ function showPatient() {
             <DropdownMenuLabel>Aktionen</DropdownMenuLabel>
             <DropdownMenuItem @click="showPatient">Patient anzeigen</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem class="text-red-500">Patient löschen</DropdownMenuItem>
+            <DropdownMenuItem class="text-destructive">Patient löschen</DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>
 </template>

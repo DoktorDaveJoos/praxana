@@ -57,7 +57,7 @@ class PatientController extends Controller
     {
         $this->authorize('view', [Patient::class, $practice, $patient]);
 
-        return inertia('patients/Show', [
+        return inertia('patients/show/BasicData', [
             'patient' => PatientResource::make($patient),
         ]);
     }

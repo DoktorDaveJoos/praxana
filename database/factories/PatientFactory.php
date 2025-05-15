@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Patient;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Patient>
+ * @extends Factory<Patient>
  */
 class PatientFactory extends Factory
 {
@@ -20,7 +21,7 @@ class PatientFactory extends Factory
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,
             'birth_date' => $this->faker->date(max: '-30 years'),
-            'gender' => $this->faker->randomElement(['male', 'female']),
+            'gender' => $this->faker->randomElement(['m', 'w', 'd']),
             'address' => $this->faker->address,
             'postal_code' => $this->faker->postcode,
             'city' => $this->faker->city,
@@ -28,7 +29,7 @@ class PatientFactory extends Factory
             'phone' => $this->faker->phoneNumber,
             'email' => $this->faker->safeEmail,
             'occupation' => $this->faker->jobTitle,
-            'insurance_type' => $this->faker->randomElement(['private', 'public']),
+            'insurance_type' => $this->faker->randomElement(['Gesetzlich', 'Privat']),
             'insurance_name' => $this->faker->company,
             'insurance_number' => (string) $this->faker->randomNumber(8),
             'emergency_contact' => $this->faker->phoneNumber,

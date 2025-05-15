@@ -54,7 +54,7 @@ test('show patient', function () {
                     ->where('postal_code', $patient->postal_code)
                     ->where('city', $patient->city)
                     ->where('country', $patient->country)
-                    ->where('birth_date', $patient->birth_date->format('dd.mm.YYYY'))
+                    ->where('birth_date', $patient->birth_date->format('d.m.Y'))
                     ->where('gender', $patient->gender)
                     ->where('occupation', $patient->occupation)
                     ->where('insurance_type', $patient->insurance_type)

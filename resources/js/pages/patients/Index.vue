@@ -7,8 +7,8 @@ import { type BreadcrumbItem, Patient, ResourceCollection, SharedData } from '@/
 import { Head, usePage } from '@inertiajs/vue3';
 
 defineProps<{
-    patients: ResourceCollection<Patient>
-}>()
+    patients: ResourceCollection<Patient>;
+}>();
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {

@@ -79,8 +79,8 @@ const table = useVueTable({
         <Input
             class="max-w-sm"
             placeholder="Suche nach Name..."
-            :model-value="table.getColumn('last_name')?.getFilterValue() as string"
-            @update:model-value="table.getColumn('last_name')?.setFilterValue($event)"
+            :model-value="table.getColumn('name')?.getFilterValue() as string"
+            @update:model-value="table.getColumn('name')?.setFilterValue($event)"
         />
         <DropdownMenu>
             <DropdownMenuTrigger as-child>
