@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\SurveyRun;
+use App\SurveyRunStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\SurveyRun>
+ * @extends Factory<SurveyRun>
  */
 class SurveyRunFactory extends Factory
 {
@@ -17,7 +19,10 @@ class SurveyRunFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'status' => $this->faker->randomElement([SurveyRunStatus::Completed, SurveyRunStatus::Pending]),
+            'started_at' => $this->faker->dateTimeThisYear(),
+            'finished_at' => $this->faker->dateTimeThisYear(),
+            'current_step_id' => null,
         ];
     }
 }

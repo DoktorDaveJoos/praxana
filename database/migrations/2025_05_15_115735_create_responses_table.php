@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('responses', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
-            $table->foreignId('survey_run_id')
+            $table->foreignUuid('survey_run_id')
                 ->constrained()
                 ->cascadeOnDelete();
 

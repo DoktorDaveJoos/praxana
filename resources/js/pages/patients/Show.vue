@@ -32,7 +32,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
         }),
     },
     {
-        title: props.patient.data.last_name + ', ' + props.patient.data.first_name,
+        title: props.patient.data.name,
         href: route('practices.patients.show', {
             practice: usePage<SharedData>().props.auth.practice.id,
             patient: props.patient.data.id,

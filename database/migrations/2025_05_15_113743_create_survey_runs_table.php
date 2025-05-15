@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('survey_runs', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
             $table->foreignId('survey_id')
                 ->constrained()
@@ -21,7 +21,7 @@ return new class extends Migration
             // Patient ID hash due to privacy reasons
             $table->string('patient_hash', 64)->index();
 
-            $table->enum('status', ['pending', 'completed', 'aborted'])->default('pending');
+            $table->string('status')->default('pending');
             $table->timestamp('started_at')->useCurrent();
             $table->timestamp('finished_at')->nullable();
 

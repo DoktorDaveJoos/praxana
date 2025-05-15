@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import DataTable from '@/components/DataTable.vue';
 import Heading from '@/components/Heading.vue';
 import { columns } from '@/components/patients/columns';
-import DataTable from '@/components/patients/DataTable.vue';
+import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem, Patient, ResourceCollection, SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
@@ -28,7 +29,16 @@ const breadcrumbItems: BreadcrumbItem[] = [
             <Heading title="Patienten Akte" description="Übersicht und Verwaltung der Patientendaten in Ihrer Praxis." />
 
             <div class="container mx-auto">
-                <DataTable :columns="columns" :data="patients.data" />
+                <DataTable :columns="columns" :data="patients.data">
+                    <template #filter="{ table }">
+                        <Input
+                            class="max-w-sm"
+                            placeholder="Suche nach Name"
+                            :model-value="table.getColumn('name')?.getFilterValue() as string"
+                            @update:model-value="table.getColumn('name')?.setFilterValue($event)"
+                        />
+                    </template>
+                </DataTable>
             </div>
         </div>
     </AppLayout>

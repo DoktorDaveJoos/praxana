@@ -4,30 +4,42 @@ namespace App\Models;
 
 use App\SurveyRunStatus;
 use Database\Factories\SurveyRunFactory;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 /**
- * 
+ * @property int $id
+ * @property int $survey_id
+ * @property string $patient_hash
+ * @property Carbon|null $started_at
+ * @property Carbon|null $finished_at
+ * @property int|null $current_step_id
  *
  * @property SurveyRunStatus $status
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Response> $responses
+ * @property-read Collection<int, Response> $responses
  * @property-read int|null $responses_count
- * @property-read \App\Models\Step|null $step
- * @property-read \App\Models\Survey|null $survey
- * @method static \Database\Factories\SurveyRunFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SurveyRun newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SurveyRun newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SurveyRun query()
- * @mixin \Eloquent
+ * @property-read Step|null $step
+ * @property-read Survey|null $survey
+ *
+ * @method static SurveyRunFactory factory($count = null, $state = [])
+ * @method static Builder<static>|SurveyRun newModelQuery()
+ * @method static Builder<static>|SurveyRun newQuery()
+ * @method static Builder<static>|SurveyRun query()
+ *
+ * @mixin Eloquent
  */
 class SurveyRun extends Model
 {
     /** @use HasFactory<SurveyRunFactory> */
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'survey_id',

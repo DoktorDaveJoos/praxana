@@ -4,16 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSurveyRunRequest;
 use App\Http\Requests\UpdateSurveyRunRequest;
+use App\Http\Resources\PatientResource;
+use App\Http\Resources\SurveyRunResource;
+use App\Models\Patient;
+use App\Models\Practice;
 use App\Models\SurveyRun;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class SurveyRunController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Practice $practice, Patient $patient)
     {
-        //
+        $this->authorize('viewAny', [SurveyRun::class, $practice, $patient]);
+
+        return inertia('patients/survey-runs/Index', [
+            'patient' => PatientResource::make($patient),
+            'surveyRuns' => SurveyRunResource::collection(
+                SurveyRun::where('patient_hash', $patient->getHash())->get()
+            ),
+        ]);
     }
 
     /**
@@ -35,9 +49,14 @@ class SurveyRunController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(SurveyRun $surveyRun)
+    public function show(Practice $practice, Patient $patient, SurveyRun $surveyRun)
     {
-        //
+        $this->authorize('view', [SurveyRun::class, $practice, $patient, $surveyRun]);
+
+        return inertia('patients/survey-runs/Show', [
+            'patient' => PatientResource::make($patient),
+            'surveyRun' => SurveyRunResource::make($surveyRun),
+        ]);
     }
 
     /**

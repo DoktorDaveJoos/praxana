@@ -26,11 +26,14 @@ const sidebarNavItems: NavItem[] = [
     },
     {
         title: 'Anamnese',
-        href: route('practices.patients.show', {
+        href: route('practices.patients.survey-runs.index', {
             practice: page.props.auth.practice.id,
             patient: props.patient.data.id,
         }),
-        isActive: false
+        isActive: route().current('practices.patients.survey-runs.*', {
+            practice: page.props.auth.practice.id,
+            patient: props.patient.data.id,
+        })
     },
 ];
 
@@ -60,7 +63,7 @@ const sidebarNavItems: NavItem[] = [
             <Separator class="my-6 md:hidden" />
 
             <div class="flex-1 md:max-w-2xl">
-                <section class="max-w-xl space-y-12">
+                <section class="max-w-4xl space-y-12">
                     <slot />
                 </section>
             </div>

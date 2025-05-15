@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="TData, TValue">
+<script setup lang="ts" generic="TData, TValue, TOptions">
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -24,11 +24,11 @@ import { ChevronDown } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 
 const props = defineProps<{
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    options?: TOptions;
 }>();
 
 const sorting = ref<SortingState>([]);
@@ -76,12 +76,7 @@ const table = useVueTable({
 
 <template>
     <div class="flex items-center py-4">
-        <Input
-            class="max-w-sm"
-            placeholder="Suche nach Name..."
-            :model-value="table.getColumn('name')?.getFilterValue() as string"
-            @update:model-value="table.getColumn('name')?.setFilterValue($event)"
-        />
+        <slot name="filter" :table="table" />
         <DropdownMenu>
             <DropdownMenuTrigger as-child>
                 <Button variant="outline" class="ml-auto">

@@ -70,6 +70,16 @@ export interface Patient {
     emergency_contact: string;
 }
 
+export interface SurveyRun {
+    id: string;
+    name: string;
+    survey_id: string;
+    status: string;
+    current_step_id: string;
+    started_at: string;
+    finished_at: string;
+}
+
 export interface ResourceCollection<T> {
     data: T[];
 }

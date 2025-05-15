@@ -2,7 +2,10 @@
 
 namespace App;
 
-enum SurveyRunStatus
+enum SurveyRunStatus: string
 {
-    //
+    case Pending = 'pending';
+    case Completed = 'completed';
+    case Aborted = 'aborted';
+
 }

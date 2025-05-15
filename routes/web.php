@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PracticeController;
+use App\Http\Controllers\SurveyRunController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\WorkOS\Http\Middleware\ValidateSessionWithWorkOS;
@@ -24,6 +25,10 @@ Route::middleware([
 
     // Patients always under /practices/{practice}/patients
     Route::resource('practices.patients', PatientController::class)
+        ->only(['index', 'show', 'store', 'update', 'destroy']);
+
+    // SurveysRuns always under /practices/{practice}/patients/{patient}/survey-runs
+    Route::resource('practices.patients.survey-runs', SurveyRunController::class)
         ->only(['index', 'show', 'store', 'update', 'destroy']);
 
 });
