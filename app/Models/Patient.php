@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
+ * 
+ *
  * @property string $id
  * @property string $practice_hash
  * @property string $first_name
@@ -30,18 +32,20 @@ use Illuminate\Support\Carbon;
  * @property string|null $insurance_name
  * @property string|null $insurance_number
  * @property string|null $emergency_contact
+ * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
- * @method static PatientFactory factory($count = null, $state = [])
+ * @method static \Database\Factories\PatientFactory factory($count = null, $state = [])
  * @method static Builder<static>|Patient newModelQuery()
  * @method static Builder<static>|Patient newQuery()
+ * @method static Builder<static>|Patient onlyTrashed()
  * @method static Builder<static>|Patient query()
  * @method static Builder<static>|Patient whereAddress($value)
  * @method static Builder<static>|Patient whereBirthDate($value)
  * @method static Builder<static>|Patient whereCity($value)
  * @method static Builder<static>|Patient whereCountry($value)
  * @method static Builder<static>|Patient whereCreatedAt($value)
+ * @method static Builder<static>|Patient whereDeletedAt($value)
  * @method static Builder<static>|Patient whereEmail($value)
  * @method static Builder<static>|Patient whereEmergencyContact($value)
  * @method static Builder<static>|Patient whereFirstName($value)
@@ -56,7 +60,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Patient wherePostalCode($value)
  * @method static Builder<static>|Patient wherePracticeHash($value)
  * @method static Builder<static>|Patient whereUpdatedAt($value)
- *
+ * @method static Builder<static>|Patient withTrashed()
+ * @method static Builder<static>|Patient withoutTrashed()
  * @mixin Eloquent
  */
 class Patient extends Model

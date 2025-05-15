@@ -2,7 +2,8 @@
 
 namespace App;
 
-enum StepType
+enum StepType: string
 {
-    //
+    case Question = 'question';
+    case Info = 'info';
 }

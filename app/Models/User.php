@@ -18,9 +18,10 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 
 /**
- *
+ * 
  *
  * @property string $id
+ * @property string|null $practice_id
  * @property string $name
  * @property string $email
  * @property Carbon|null $email_verified_at
@@ -29,7 +30,6 @@ use Illuminate\Support\Carbon;
  * @property string $avatar
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $practice_id
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read \App\Models\Practice|null $practice
