@@ -78,6 +78,19 @@ export interface SurveyRun {
     current_step_id: string;
     started_at: string;
     finished_at: string;
+    responses?: Response[];
+}
+
+export interface Response {
+    id: string;
+    survey_run_id: string;
+    step_id: string;
+    question?: string;
+    choice_id?: string;
+    type: string;
+    value?: string,
+    created_at: string;
+    updated_at: string;
 }
 
 export interface ResourceCollection<T> {

@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/HeadingSmall.vue';
+import BaseResponseCard from '@/components/surveys/responses/BaseResponseCard.vue';
+import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/AppLayout.vue';
 import PatientsLayout from '@/layouts/patients/Layout.vue';
 import { BreadcrumbItem, Patient, Resource, SharedData, type SurveyRun } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
+import { formatDistanceToNow } from 'date-fns';
+import { de } from 'date-fns/locale';
+import { computed } from 'vue';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Sparkles } from 'lucide-vue-next'
 
 const props = defineProps<{
     patient: Resource<Patient>;
@@ -40,6 +47,18 @@ const breadcrumbItems: BreadcrumbItem[] = [
         }),
     },
 ];
+
+const infoText = computed(() => {
+    return props.surveyRun.data.finished_at
+        ? `Abgeschlossen ${formatDistanceToNow(new Date(props.surveyRun.data.finished_at), {
+              addSuffix: true,
+              locale: de,
+          })}`
+        : `Gestart ${formatDistanceToNow(new Date(props.surveyRun.data.created_at), {
+              addSuffix: true,
+              locale: de,
+          })}`;
+});
 </script>
 
 <template>
@@ -50,7 +69,22 @@ const breadcrumbItems: BreadcrumbItem[] = [
             <div class="space-y-6">
                 <HeadingSmall :title="surveyRun.data.name" description="Übersicht und Verwaltung der Anamnesedaten des Patienten." />
 
-                <div class="container mx-auto"></div>
+                <div class="flex items-center space-x-2">
+                    <Badge variant="secondary">{{ surveyRun.data.status }}</Badge>
+                    <p class="text-muted-foreground text-xs">{{ infoText }}</p>
+                </div>
+
+                <Alert>
+                    <Sparkles class="h-4 w-4" />
+                    <AlertTitle>AI Analysis Result</AlertTitle>
+                    <AlertDescription>
+                        Based on the provided anamnesis, the patient shows no known allergies, occasional headaches, and is under treatment for hypertension. No immediate critical issues detected.
+                    </AlertDescription>
+                </Alert>
+
+                <div class="container mx-auto grid gap-4">
+                    <BaseResponseCard v-for="response in surveyRun.data.responses" v-bind:key="response.id" :response="response" />
+                </div>
             </div>
         </PatientsLayout>
     </AppLayout>

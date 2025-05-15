@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Response;
+use App\ResponseType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Response>
+ * @extends Factory<Response>
  */
 class ResponseFactory extends Factory
 {
@@ -16,8 +18,25 @@ class ResponseFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            //
-        ];
+        $responseType = $this->faker->randomElement(ResponseType::cases());
+
+        return match ($responseType) {
+            ResponseType::Text => [
+                'value' => $this->faker->sentence(),
+                'type' => $responseType,
+            ],
+            ResponseType::Number => [
+                'value' => $this->faker->randomFloat(2, 0, 100),
+                'type' => $responseType,
+            ],
+            ResponseType::Boolean => [
+                'value' => $this->faker->boolean(),
+                'type' => $responseType,
+            ],
+            ResponseType::Date => [
+                'value' => $this->faker->date(),
+                'type' => $responseType,
+            ]
+        };
     }
 }

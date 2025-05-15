@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Step;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Step>
+ * @extends Factory<Step>
  */
 class StepFactory extends Factory
 {
@@ -17,7 +18,11 @@ class StepFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title' => $this->faker->sentence(),
+            'content' => $this->faker->paragraph(),
+            'step_type' => $this->faker->randomElement(['question', 'info']),
+            'question_type' => $this->faker->randomElement(['text', 'multiple_choice', 'single_choice']),
+            'default_next_step_id' => null,
         ];
     }
 }

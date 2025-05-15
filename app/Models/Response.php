@@ -4,27 +4,36 @@ namespace App\Models;
 
 use App\ResponseType;
 use Database\Factories\ResponseFactory;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
+ * @property string $id
+ * @property string $survey_run_id
+ * @property string|null $step_id
+ * @property string|null $choice_id
+ * @property string $value
  *
  * @property ResponseType $type
- * @property-read \App\Models\Choice|null $choice
- * @property-read \App\Models\Step|null $step
- * @property-read \App\Models\SurveyRun|null $surveyRun
- * @method static \Database\Factories\ResponseFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Response newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Response newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Response query()
- * @mixin \Eloquent
+ * @property-read Choice|null $choice
+ * @property-read Step|null $step
+ * @property-read SurveyRun|null $surveyRun
+ *
+ * @method static ResponseFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Response newModelQuery()
+ * @method static Builder<static>|Response newQuery()
+ * @method static Builder<static>|Response query()
+ *
+ * @mixin Eloquent
  */
 class Response extends Model
 {
     /** @use HasFactory<ResponseFactory> */
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'survey_run_id',

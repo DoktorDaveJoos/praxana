@@ -55,7 +55,7 @@ class SurveyRunController extends Controller
 
         return inertia('patients/survey-runs/Show', [
             'patient' => PatientResource::make($patient),
-            'surveyRun' => SurveyRunResource::make($surveyRun),
+            'surveyRun' => SurveyRunResource::make($surveyRun->load('responses')),
         ]);
     }
 

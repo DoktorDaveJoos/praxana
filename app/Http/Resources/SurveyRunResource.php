@@ -24,6 +24,9 @@ class SurveyRunResource extends JsonResource
             'status' => $this->status,
             'started_at' => $this->started_at?->format('Y-m-d H:i:s'),
             'finished_at' => $this->finished_at?->format('Y-m-d H:i:s'),
+            'responses' => $this->whenLoaded('responses', function () {
+                return ResponseResource::collection($this->responses);
+            }),
         ];
     }
 }

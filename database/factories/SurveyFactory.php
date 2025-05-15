@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Survey;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Survey>
+ * @extends Factory<Survey>
  */
 class SurveyFactory extends Factory
 {
@@ -17,7 +18,10 @@ class SurveyFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->words(3, true),
+            'description' => $this->faker->sentences(3, true),
+            'version' => 1,
+            'is_active' => true,
         ];
     }
 }
