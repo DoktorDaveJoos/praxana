@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $started_at
  * @property Carbon|null $finished_at
  * @property int|null $current_step_id
+ * @property string $ai_analysis
  *
  * @property SurveyRunStatus $status
  * @property-read Collection<int, Response> $responses
@@ -48,6 +49,7 @@ class SurveyRun extends Model
         'started_at',
         'finished_at',
         'current_step_id',
+        'ai_analysis',
     ];
 
     protected $casts = [

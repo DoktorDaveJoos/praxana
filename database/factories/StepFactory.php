@@ -2,7 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Choice;
 use App\Models\Step;
+use App\QuestionType;
+use App\StepType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,12 +20,23 @@ class StepFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            'title' => $this->faker->sentence(),
-            'content' => $this->faker->paragraph(),
-            'step_type' => $this->faker->randomElement(['question', 'info']),
-            'question_type' => $this->faker->randomElement(['text', 'multiple_choice', 'single_choice']),
-            'default_next_step_id' => null,
-        ];
+        $stepType = $this->faker->randomElement(StepType::cases());
+
+        return match ($stepType) {
+            StepType::Question => [
+                'title' => $this->faker->sentence(),
+                'content' => $this->faker->paragraph(),
+                'step_type' => $stepType,
+                'question_type' => $this->faker->randomElement(QuestionType::cases()),
+                'default_next_step_id' => null,
+            ],
+            StepType::Dialog => [
+                'title' => $this->faker->sentence(),
+                'content' => $this->faker->paragraph(),
+                'step_type' => $stepType,
+                'question_type' => null,
+                'default_next_step_id' => null,
+            ],
+        };
     }
 }

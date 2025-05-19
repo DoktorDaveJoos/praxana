@@ -1,16 +1,18 @@
 <script setup lang="ts">
+import AlertMarkdownContent from '@/components/AlertMarkdownContent.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import BaseResponseCard from '@/components/surveys/responses/BaseResponseCard.vue';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/AppLayout.vue';
 import PatientsLayout from '@/layouts/patients/Layout.vue';
 import { BreadcrumbItem, Patient, Resource, SharedData, type SurveyRun } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { Sparkles } from 'lucide-vue-next';
 import { computed } from 'vue';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Sparkles } from 'lucide-vue-next'
 
 const props = defineProps<{
     patient: Resource<Patient>;
@@ -54,7 +56,7 @@ const infoText = computed(() => {
               addSuffix: true,
               locale: de,
           })}`
-        : `Gestart ${formatDistanceToNow(new Date(props.surveyRun.data.created_at), {
+        : `Gestart ${formatDistanceToNow(new Date(props.surveyRun.data.started_at), {
               addSuffix: true,
               locale: de,
           })}`;
@@ -74,17 +76,31 @@ const infoText = computed(() => {
                     <p class="text-muted-foreground text-xs">{{ infoText }}</p>
                 </div>
 
-                <Alert>
-                    <Sparkles class="h-4 w-4" />
-                    <AlertTitle>AI Analysis Result</AlertTitle>
-                    <AlertDescription>
-                        Based on the provided anamnesis, the patient shows no known allergies, occasional headaches, and is under treatment for hypertension. No immediate critical issues detected.
-                    </AlertDescription>
-                </Alert>
+                <template v-if="surveyRun.data.status === 'completed'">
+                    <Alert>
+                        <Sparkles class="h-4 w-4" />
+                        <AlertTitle>KI Analyse</AlertTitle>
+                        <AlertDescription>
+                            <Separator class="my-2" />
+                            <AlertMarkdownContent :content="surveyRun.data.ai_analysis" />
+                        </AlertDescription>
+                    </Alert>
 
-                <div class="container mx-auto grid gap-4">
-                    <BaseResponseCard v-for="response in surveyRun.data.responses" v-bind:key="response.id" :response="response" />
-                </div>
+                    <div class="container mx-auto grid gap-4">
+                        <HeadingSmall title="Fragen & Antworten" />
+                        <BaseResponseCard
+                            v-for="(response, index) in surveyRun.data.responses"
+                            v-bind:key="response.id"
+                            :response="response"
+                            :index="index"
+                        />
+                    </div>
+                </template>
+                <template v-else>
+                    <Alert>
+
+                    </Alert>
+                </template>
             </div>
         </PatientsLayout>
     </AppLayout>

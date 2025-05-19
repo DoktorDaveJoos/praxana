@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Response;
+use App\StepType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,7 +26,7 @@ class ResponseResource extends JsonResource
             'choice_id' => $this->choice_id,
             'question' => $this->step->content,
             'question_type' => $this->type,
-            'value' => $this->value,
+            'value' => $this->type->cast($this->value),
         ];
     }
 }

@@ -29,6 +29,9 @@ return new class extends Migration
             // This is used to track the progress of the survey
             $table->string('current_step_id')->nullable();
 
+            // Save AI analysis result
+            $table->text('ai_analysis')->nullable();
+
             $table->timestamps();
         });
     }

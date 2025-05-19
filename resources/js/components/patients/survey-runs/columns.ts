@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 
 import type { SurveyRun } from '@/types';
 import { ColumnDef } from '@tanstack/vue-table';
+import { format } from 'date-fns';
 import { h } from 'vue';
 
 export const columns: ColumnDef<SurveyRun & { patientId: string }>[] = [
@@ -54,14 +55,16 @@ export const columns: ColumnDef<SurveyRun & { patientId: string }>[] = [
         accessorKey: 'started_at',
         header: () => h('div', { class: 'text-left' }, 'Startdatum'),
         cell: ({ row }) => {
-            return h('div', { class: 'text-left text-xs' }, row.getValue('started_at'));
+            const formattedDate = row.getValue('finished_at') ? format(new Date(row.getValue('started_at')), 'dd.MM.yyyy') : '-';
+            return h('div', { class: 'text-left text-xs' }, formattedDate);
         },
     },
     {
         accessorKey: 'finished_at',
         header: () => h('div', { class: 'text-left' }, 'Enddatum'),
         cell: ({ row }) => {
-            return h('div', { class: 'text-left text-xs' }, row.getValue('finished_at') ?? '-');
+            const formattedDate = row.getValue('finished_at') ? format(new Date(row.getValue('finished_at')), 'dd.MM.yyyy') : '-';
+            return h('div', { class: 'text-left text-xs' }, formattedDate);
         },
     },
     {

@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Choice;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Choice>
+ * @extends Factory<Choice>
  */
 class ChoiceFactory extends Factory
 {
@@ -17,7 +18,8 @@ class ChoiceFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'label' => $this->faker->words(rand(1, 3), true),
+            'value' => $this->faker->word(),
         ];
     }
 }

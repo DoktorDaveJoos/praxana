@@ -18,8 +18,8 @@ class SurveyFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->words(3, true),
-            'description' => $this->faker->sentences(3, true),
+            'name' => $this->faker->words(rand(2, 4), true),
+            'description' => $this->faker->sentences(rand(1, 4), true),
             'version' => 1,
             'is_active' => true,
         ];

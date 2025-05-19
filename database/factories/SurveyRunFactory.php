@@ -23,6 +23,7 @@ class SurveyRunFactory extends Factory
             'started_at' => $this->faker->dateTimeThisYear(),
             'finished_at' => $this->faker->dateTimeThisYear(),
             'current_step_id' => null,
+            'ai_analysis' => $this->faker->sentences(rand(3, 5), true),
         ];
     }
 }

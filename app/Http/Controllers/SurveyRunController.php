@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSurveyRunRequest;
 use App\Http\Requests\UpdateSurveyRunRequest;
 use App\Http\Resources\PatientResource;
+use App\Http\Resources\SurveyResource;
 use App\Http\Resources\SurveyRunResource;
 use App\Models\Patient;
 use App\Models\Practice;
+use App\Models\Survey;
 use App\Models\SurveyRun;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -27,6 +29,7 @@ class SurveyRunController extends Controller
             'surveyRuns' => SurveyRunResource::collection(
                 SurveyRun::where('patient_hash', $patient->getHash())->get()
             ),
+            'surveys' => SurveyResource::collection(Survey::all()),
         ]);
     }
 
@@ -41,9 +44,22 @@ class SurveyRunController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSurveyRunRequest $request)
+    public function store(StoreSurveyRunRequest $request, Practice $practice, Patient $patient)
     {
-        //
+        $this->authorize('create', [SurveyRun::class, $practice, $patient]);
+
+        collect($request->validated('surveys'))
+            ->each(function ($surveyId) use ($patient) {
+                SurveyRun::create([
+                    'patient_hash' => $patient->getHash(),
+                    'survey_id' => $surveyId,
+                ]);
+            });
+
+        return to_route('practices.patients.survey-runs.index', [
+            'practice' => $practice,
+            'patient' => $patient,
+        ]);
     }
 
     /**

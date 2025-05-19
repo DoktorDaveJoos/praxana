@@ -70,6 +70,14 @@ export interface Patient {
     emergency_contact: string;
 }
 
+export interface Survey {
+    id: string;
+    name: string;
+    description: string;
+    version: string;
+    is_active: string;
+}
+
 export interface SurveyRun {
     id: string;
     name: string;
@@ -78,6 +86,7 @@ export interface SurveyRun {
     current_step_id: string;
     started_at: string;
     finished_at: string;
+    ai_analysis: string;
     responses?: Response[];
 }
 
@@ -99,5 +108,11 @@ export interface ResourceCollection<T> {
 
 export interface Resource<T> {
     data: T;
+}
+
+export interface DataTableOptions {
+    filters: {
+        columns: bool
+    }
 }
 

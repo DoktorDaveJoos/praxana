@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="TData, TValue, TOptions">
+<script setup lang="ts" generic="TData, TValue">
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -21,14 +21,19 @@ import { valueUpdater } from '@/lib/utils';
 
 import { ChevronDown } from 'lucide-vue-next';
 
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 import { Button } from '@/components/ui/button';
+import { DataTableOptions } from '@/types';
 
 const props = defineProps<{
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
-    options?: TOptions;
+    options?: DataTableOptions;
+}>();
+
+const emit = defineEmits<{
+    (e: 'update:selectedRows', value: TData[]): void;
 }>();
 
 const sorting = ref<SortingState>([]);
@@ -72,12 +77,17 @@ const table = useVueTable({
         },
     },
 });
+
+watch(rowSelection, () => {
+    const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original as TData);
+    emit('update:selectedRows', selectedRows);
+});
 </script>
 
 <template>
     <div class="flex items-center py-4">
         <slot name="filter" :table="table" />
-        <DropdownMenu>
+        <DropdownMenu v-if="options?.filters.columns">
             <DropdownMenuTrigger as-child>
                 <Button variant="outline" class="ml-auto">
                     Spalten

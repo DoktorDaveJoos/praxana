@@ -31,9 +31,10 @@ class SurveyRunPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Practice $practice, Patient $patient): bool
     {
-        return false;
+        return $practice->users->contains($user) &&
+            $patient->practice_hash === $practice->getHash();
     }
 
     /**
