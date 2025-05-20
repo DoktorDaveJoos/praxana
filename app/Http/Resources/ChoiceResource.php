@@ -2,14 +2,14 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Survey;
+use App\Models\Choice;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin Survey
+ * @mixin Choice
  */
-class SurveyResource extends JsonResource
+class ChoiceResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -20,11 +20,10 @@ class SurveyResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'version' => $this->version,
-            'is_active' => $this->is_active,
-            'steps' => StepResource::collection($this->whenLoaded('steps')),
+            'step_id' => $this->step_id,
+            'label' => $this->label,
+            'value' => $this->value,
+            'order' => $this->order,
         ];
     }
 }

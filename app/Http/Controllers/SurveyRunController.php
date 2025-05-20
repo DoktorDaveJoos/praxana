@@ -78,9 +78,20 @@ class SurveyRunController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(SurveyRun $surveyRun)
+    public function edit(Practice $practice, Patient $patient, SurveyRun $surveyRun)
     {
-        //
+        $this->authorize('update', [SurveyRun::class, $practice, $patient, $surveyRun]);
+
+        return inertia('patients/survey-runs/Edit', [
+            'patient' => PatientResource::make($patient),
+            'surveyRun' => SurveyRunResource::make($surveyRun),
+            'survey' => SurveyResource::make(
+                $surveyRun->survey->load(
+                    'steps',
+                    'steps.choices',
+                )
+            ),
+        ]);
     }
 
     /**

@@ -34,7 +34,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
- * @method static \Database\Factories\PatientFactory factory($count = null, $state = [])
+ * @method static PatientFactory factory($count = null, $state = [])
  * @method static Builder<static>|Patient newModelQuery()
  * @method static Builder<static>|Patient newQuery()
  * @method static Builder<static>|Patient onlyTrashed()

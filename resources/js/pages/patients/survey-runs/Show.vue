@@ -8,10 +8,10 @@ import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/AppLayout.vue';
 import PatientsLayout from '@/layouts/patients/Layout.vue';
 import { BreadcrumbItem, Patient, Resource, SharedData, type SurveyRun } from '@/types';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { Sparkles } from 'lucide-vue-next';
+import { NotebookPen, Sparkles } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -98,7 +98,24 @@ const infoText = computed(() => {
                 </template>
                 <template v-else>
                     <Alert>
-
+                        <NotebookPen class="h-4 w-4" />
+                        <AlertTitle>Anamnesebogen kann jetzt ausgefüllt werden</AlertTitle>
+                        <AlertDescription>
+                            Sie können die Anamnese jederzeit pausieren und zu einem späteren Zeitpunkt fortsetzen. Klicken Sie auf den Button unten,
+                            um mit dem Ausfüllen zu beginnen.
+                            <Link
+                                :href="
+                                    route('practices.patients.survey-runs.edit', {
+                                        practice: usePage<SharedData>().props.auth.practice.id,
+                                        patient: props.patient.data.id,
+                                        survey_run: props.surveyRun.data.id,
+                                    })
+                                "
+                                class="text-primary-foreground bg-primary hover:bg-primary/90 mt-4 rounded-md px-4 py-2 font-medium transition-colors"
+                            >
+                                Anamnese starten
+                            </Link>
+                        </AlertDescription>
                     </Alert>
                 </template>
             </div>

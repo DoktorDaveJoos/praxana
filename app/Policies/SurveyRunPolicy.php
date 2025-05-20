@@ -6,6 +6,7 @@ use App\Models\Patient;
 use App\Models\Practice;
 use App\Models\SurveyRun;
 use App\Models\User;
+use App\SurveyRunStatus;
 
 class SurveyRunPolicy
 {
@@ -40,9 +41,12 @@ class SurveyRunPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, SurveyRun $surveyRun): bool
+    public function update(User $user, Practice $practice, Patient $patient, SurveyRun $surveyRun): bool
     {
-        return false;
+        return $practice->users->contains($user) &&
+            $patient->practice_hash === $practice->getHash() &&
+            $surveyRun->patient_hash === $patient->getHash() &&
+            $surveyRun->status === SurveyRunStatus::Pending;
     }
 
     /**

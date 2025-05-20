@@ -29,7 +29,7 @@ Route::middleware([
 
     // SurveysRuns always under /practices/{practice}/patients/{patient}/survey-runs
     Route::resource('practices.patients.survey-runs', SurveyRunController::class)
-        ->only(['index', 'show', 'store', 'update', 'destroy']);
+        ->only(['index', 'show', 'store', 'edit', 'update', 'destroy']);
 
 });
 

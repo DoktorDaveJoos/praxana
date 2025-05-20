@@ -14,10 +14,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
+ * @property int $id
  * @property int $survey_id
  * @property string $title
  * @property string $content
  * @property array $options
+ * @property int|null $default_next_step_id
  *
  * @property StepType $step_type
  * @property QuestionType $question_type
