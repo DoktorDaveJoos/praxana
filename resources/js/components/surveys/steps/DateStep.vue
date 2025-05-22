@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import CustomDatePicker from '@/components/CustomDatePicker.vue';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Step, StepResponse } from '@/types';
 import { cn } from '@/lib/utils';
+import { Step, StepResponse } from '@/types';
 import { DateFormatter, parseDate } from '@internationalized/date';
 import { toTypedSchema } from '@vee-validate/zod';
 import { CalendarIcon } from 'lucide-vue-next';
@@ -11,7 +12,6 @@ import { toDate } from 'reka-ui/date';
 import { useForm } from 'vee-validate';
 import { computed, ref } from 'vue';
 import { z } from 'zod';
-import CustomDatePicker from '@/components/CustomDatePicker.vue';
 
 const props = defineProps<{
     step: Step;
@@ -25,9 +25,14 @@ const df = new DateFormatter('de-DE', {
     dateStyle: 'long',
 });
 
+const optional = props.step.options?.optional ?? false;
 const formSchema = toTypedSchema(
     z.object({
-        date: z.string(),
+        date: optional
+            ? z.string().optional()
+            : z.string({
+                  required_error: 'Dieses Feld ist erforderlich.',
+              }),
     }),
 );
 
@@ -46,7 +51,7 @@ const value = computed({
 const onSubmit = handleSubmit((values) => {
     emit('submit', {
         step_id: props.step.id,
-        value: values.date
+        value: values.date,
     });
 });
 </script>

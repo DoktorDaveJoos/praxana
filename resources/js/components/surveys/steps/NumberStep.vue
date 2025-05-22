@@ -15,23 +15,20 @@ const emit = defineEmits<{
     (e: 'submit', values: StepResponse<string>): void;
 }>();
 
+const optional = props.step.options?.optional ?? false;
 const formSchema = toTypedSchema(
     z.object({
-        number: z.number(),
+        number: optional ? z.number().optional() : z.number({ required_error: 'Dieses Feld ist erforderlich.' }),
     }),
 );
-
 const { handleSubmit, setFieldValue } = useForm({
     validationSchema: formSchema,
-    initialValues: {
-        number: 0,
-    },
 });
 
 const onSubmit = handleSubmit((values) => {
     emit('submit', {
         step_id: props.step.id,
-        value: values.number.toString(),
+        value: values.number?.toString() ?? null,
     });
 });
 </script>

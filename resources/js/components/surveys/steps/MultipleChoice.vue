@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { Checkbox } from '@/components/ui/checkbox';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Step, StepResponse } from '@/types';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Step, StepResponse } from '@/types';
 
 const props = defineProps<{
     step: Step;
@@ -14,9 +14,14 @@ const emit = defineEmits<{
     (e: 'submit', values: StepResponse<string>): void;
 }>();
 
+const optional = props.step.options?.optional ?? false;
 const formSchema = toTypedSchema(
     z.object({
-        choices: z.array(z.string()),
+        choices: optional
+            ? z.array(z.string()).optional()
+            : z.array(z.string(), { required_error: 'Wählen Sie bitte mindestens 1 Antwort aus.' }).min(1, {
+                  message: 'Wählen Sie bitte mindestens 1 Antwort aus.',
+              }),
     }),
 );
 
@@ -44,13 +49,13 @@ const onSubmit = handleSubmit((values) => {
                     v-slot="{ value, handleChange }"
                     :key="choice.id"
                     type="checkbox"
-                    :value="choice.id"
+                    :value="choice.value"
                     :unchecked-value="false"
                     name="choices"
                 >
                     <FormItem class="flex flex-row items-start space-y-0 space-x-3">
                         <FormControl>
-                            <Checkbox :model-value="value.includes(choice.id)" @update:model-value="handleChange" />
+                            <Checkbox :model-value="value.includes(choice.value)" @update:model-value="handleChange" />
                         </FormControl>
                         <FormLabel class="font-normal">
                             {{ choice.label }}

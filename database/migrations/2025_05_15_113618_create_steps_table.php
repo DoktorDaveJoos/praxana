@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('question_type')->nullable();
 
             // Only present if step_type is "question"
-            // e.g. { min: 0, max: 100 } -> for question_type "scale" or "number"
+            // e.g. { min: 0, max: 100, optional: true } -> for question_type "scale" or "number"
             $table->json('options')->nullable();
 
             $table->foreignId('default_next_step_id')

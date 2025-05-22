@@ -22,6 +22,14 @@ return new class extends Migration
             $table->string('label');
             // eg. ("yes", "no", "45", "2023-05-15")
             $table->string('value');
+
+            // If a specific choice skips to a specific step, this field is used
+            // to determine the next step. If null, the default_next_step_id of the step is used.
+            $table->foreignId('next_step_id')
+                ->nullable()
+                ->constrained('steps')
+                ->nullOnDelete();
+
             $table->integer('order')->nullable();
 
             $table->timestamps();

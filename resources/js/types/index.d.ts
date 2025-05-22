@@ -107,7 +107,7 @@ export interface Step {
     id: number;
     title: string;
     content: string;
-    options: StepOptions<T>;
+    options: StepOptions<string>;
     step_type: StepType;
     question_type: string;
     default_next_step_id: number;
@@ -117,6 +117,7 @@ export interface Step {
 export interface StepOptions<T> {
     min: T;
     max: T;
+    optional: boolean
 }
 
 export interface Choice {

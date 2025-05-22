@@ -14,7 +14,7 @@ import PatientsLayout from '@/layouts/patients/Layout.vue';
 import { BreadcrumbItem, Patient, Resource, type ResourceCollection, SharedData, type Survey, type SurveyRun } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { toTypedSchema } from '@vee-validate/zod';
-import { TriangleAlert, LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle, TriangleAlert } from 'lucide-vue-next';
 import { useForm } from 'vee-validate';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
@@ -56,7 +56,7 @@ const formSchema = toTypedSchema(
     }),
 );
 
-const { handleSubmit } = useForm({
+const { handleSubmit, values } = useForm({
     validationSchema: formSchema,
     initialValues: {
         surveys: [],
@@ -103,11 +103,11 @@ const onSubmit = handleSubmit((values) => {
                         <SheetTrigger>
                             <Button>Hinzufügen</Button>
                         </SheetTrigger>
-                        <SheetContent class="min-w-xl">
+                        <SheetContent class="min-w-xl overflow-auto">
                             <SheetHeader>
-                                <SheetTitle>Anamnesebogen zuweisen</SheetTitle>
+                                <SheetTitle class="px-4">Anamnesebogen zuweisen</SheetTitle>
                                 <form @submit="onSubmit">
-                                    <SheetDescription>
+                                    <SheetDescription class="p-4">
                                         <p class="text-muted-foreground text-sm">
                                             Wählen Sie einen vorgefertigten Anamnesebogen aus der Liste aus und weisen Sie ihn dem Patienten zu.
                                             Stellen Sie sicher, dass der ausgewählte Bogen den Anforderungen entspricht.
@@ -124,8 +124,6 @@ const onSubmit = handleSubmit((values) => {
                                             </FormItem>
                                             <FormMessage />
                                         </FormField>
-                                    </SheetDescription>
-                                    <SheetFooter>
                                         <FormField v-if="patient.data.email" v-slot="{ value, handleChange }" type="checkbox" name="send">
                                             <FormItem class="flex flex-row items-start space-y-0 gap-x-3 rounded-md border p-4 shadow">
                                                 <FormControl>
@@ -161,13 +159,13 @@ const onSubmit = handleSubmit((values) => {
                                             </AlertDescription>
                                         </Alert>
 
-                                        <Button :disabled="loadingIndicator" class="mt-4" type="submit">
+                                        <Button :disabled="loadingIndicator" class="mt-4 w-full" type="submit">
                                             <template v-if="loadingIndicator">
                                                 <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
                                             </template>
-                                            Anamnesebogen zuweisen
+                                            ({{ values.surveys?.length ?? 0 }}) Anamnesebogen zuweisen
                                         </Button>
-                                    </SheetFooter>
+                                    </SheetDescription>
                                 </form>
                             </SheetHeader>
                         </SheetContent>

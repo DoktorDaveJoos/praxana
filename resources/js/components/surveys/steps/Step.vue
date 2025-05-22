@@ -8,6 +8,7 @@ import TextStep from '@/components/surveys/steps/TextStep.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { type Step, StepResponse } from '@/types';
+import { GraduationCap } from 'lucide-vue-next';
 
 defineProps<{
     step: Step;
@@ -45,14 +46,19 @@ const handleStepSubmit = (values: StepResponse<string>) => {
 <template>
     <Card class="w-full">
         <CardHeader>
-            <CardTitle>{{ step.title }}</CardTitle>
-            <CardDescription>{{ step.content }}</CardDescription>
+            <CardTitle class="flex items-center">
+                <GraduationCap v-if="! isQuestion(step)" class="text-foreground h-6 w-6 mr-4" />
+                {{ step.title }}
+            </CardTitle>
+            <CardDescription>
+                {{ step.content }}
+            </CardDescription>
         </CardHeader>
         <CardContent>
             <template v-if="isQuestion(step)">
                 <component v-if="mapComponent(step.question_type)" :is="mapComponent(step.question_type)" :step="step" @submit="handleStepSubmit">
                     <template v-slot:actions="{ submit }">
-                        <div class="flex justify-between mt-6">
+                        <div class="mt-6 flex justify-between">
                             <Button
                                 @click="
                                     emit('previous', {
