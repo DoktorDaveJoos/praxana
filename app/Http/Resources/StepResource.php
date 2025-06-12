@@ -21,12 +21,12 @@ class StepResource extends JsonResource
         return [
             'id' => $this->id,
             'survey_id' => $this->survey_id,
+            'order' => $this->order,
             'title' => $this->title,
             'content' => $this->content,
             'step_type' => $this->step_type,
             'question_type' => $this->question_type,
             'options' => $this->options,
-            'default_next_step_id' => $this->default_next_step_id,
             'choices' => ChoiceResource::collection($this->whenLoaded('choices')),
         ];
     }

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $label
  * @property string $value
  * @property int $order
+ * @property int|null $optional_next_step
  *
  * @method static ChoiceFactory factory($count = null, $state = [])
  * @method static Builder<static>|Choice newModelQuery()

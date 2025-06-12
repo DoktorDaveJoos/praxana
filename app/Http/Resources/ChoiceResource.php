@@ -24,6 +24,7 @@ class ChoiceResource extends JsonResource
             'label' => $this->label,
             'value' => $this->value,
             'order' => $this->order,
+            'optional_next_step' => $this->optional_next_step,
         ];
     }
 }

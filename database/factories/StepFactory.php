@@ -28,14 +28,12 @@ class StepFactory extends Factory
                 'content' => $this->faker->paragraph(),
                 'step_type' => $stepType,
                 'question_type' => $this->faker->randomElement(QuestionType::cases()),
-                'default_next_step_id' => null,
             ],
             StepType::Dialog => [
                 'title' => $this->faker->sentence(),
                 'content' => $this->faker->paragraph(),
                 'step_type' => $stepType,
                 'question_type' => null,
-                'default_next_step_id' => null,
             ],
         };
     }

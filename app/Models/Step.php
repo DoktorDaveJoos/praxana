@@ -16,10 +16,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int $id
  * @property int $survey_id
+ * @property int $order
  * @property string $title
  * @property string $content
  * @property array $options
- * @property int|null $default_next_step_id
  *
  * @property StepType $step_type
  * @property QuestionType $question_type
@@ -41,12 +41,12 @@ class Step extends Model
 
     protected $fillable = [
         'survey_id',
+        'order',
         'title',
         'content',
         'step_type',
         'question_type',
         'options',
-        'default_next_step_id',
     ];
 
     protected $casts = [

@@ -76,7 +76,7 @@ export interface Survey {
     description: string;
     version: string;
     is_active: string;
-    steps: ?Step[];
+    steps: Step[];
 }
 
 export interface SurveyRun {
@@ -96,7 +96,7 @@ export interface Response {
     survey_run_id: string;
     step_id: string;
     question?: string;
-    choice_id?: string;
+    choice_id?: number;
     type: string;
     value?: string,
     created_at: string;
@@ -105,12 +105,12 @@ export interface Response {
 
 export interface Step {
     id: number;
+    order: number;
     title: string;
     content: string;
     options: StepOptions<string>;
     step_type: StepType;
     question_type: string;
-    default_next_step_id: number;
     choices: ?Choice[];
 }
 
@@ -121,16 +121,19 @@ export interface StepOptions<T> {
 }
 
 export interface Choice {
-    id: string;
+    id: number;
     step_id: string;
     label: string;
     value: string;
     order: number;
+    optional_next_step: ?number;
 }
 
-export interface StepResponse<T> {
-    value: ?T;
-    step_id: number;
+export interface StepResponse {
+    value: string;
+    self_step_id: number;
+    next_step_id: ?number;
+    type: string;
 }
 
 export interface ResourceCollection<T> {

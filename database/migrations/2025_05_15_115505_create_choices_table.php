@@ -24,11 +24,9 @@ return new class extends Migration
             $table->string('value');
 
             // If a specific choice skips to a specific step, this field is used
-            // to determine the next step. If null, the default_next_step_id of the step is used.
-            $table->foreignId('next_step_id')
-                ->nullable()
-                ->constrained('steps')
-                ->nullOnDelete();
+            // to determine the next step.
+            // If null, the next step is determined by the order of the steps.
+            $table->integer('optional_next_step')->nullable();
 
             $table->integer('order')->nullable();
 

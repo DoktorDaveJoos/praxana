@@ -18,6 +18,8 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
+            $table->integer('order');
+
             // Title of the step (e.g. "Allgemeine Fragen")
             $table->string('title')->nullable();
             // Content of the step (e.g. "Wie alt sind Sie?")
@@ -32,11 +34,6 @@ return new class extends Migration
             // Only present if step_type is "question"
             // e.g. { min: 0, max: 100, optional: true } -> for question_type "scale" or "number"
             $table->json('options')->nullable();
-
-            $table->foreignId('default_next_step_id')
-                ->nullable()
-                ->constrained('steps')
-                ->nullOnDelete();
 
             $table->timestamps();
         });

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { Step, StepResponse } from '@/types';
+import { Step } from '@/types';
 import { DateFormatter, parseDate } from '@internationalized/date';
 import { toTypedSchema } from '@vee-validate/zod';
 import { CalendarIcon } from 'lucide-vue-next';
@@ -17,10 +17,6 @@ const props = defineProps<{
     step: Step;
 }>();
 
-const emit = defineEmits<{
-    (e: 'submit', values: StepResponse<string>): void;
-}>();
-
 const df = new DateFormatter('de-DE', {
     dateStyle: 'long',
 });
@@ -28,7 +24,7 @@ const df = new DateFormatter('de-DE', {
 const optional = props.step.options?.optional ?? false;
 const formSchema = toTypedSchema(
     z.object({
-        date: optional
+        value: optional
             ? z.string().optional()
             : z.string({
                   required_error: 'Dieses Feld ist erforderlich.',
@@ -44,21 +40,17 @@ const { handleSubmit, setFieldValue, values } = useForm({
 });
 
 const value = computed({
-    get: () => (values.date ? parseDate(values.date) : undefined),
+    get: () => (values.value ? parseDate(values.value) : undefined),
     set: (val) => val,
 });
 
-const onSubmit = handleSubmit((values) => {
-    emit('submit', {
-        step_id: props.step.id,
-        value: values.date,
-    });
-});
+
+
 </script>
 
 <template>
-    <form class="space-y-8" @submit="onSubmit">
-        <FormField name="date">
+    <form class="space-y-8" @submit="handleSubmit">
+        <FormField name="value">
             <FormItem class="flex flex-col">
                 <Popover>
                     <PopoverTrigger as-child>
@@ -81,9 +73,9 @@ const onSubmit = handleSubmit((values) => {
                             @update:model-value="
                                 (v) => {
                                     if (v) {
-                                        setFieldValue('date', v.toString());
+                                        setFieldValue('value', v.toString());
                                     } else {
-                                        setFieldValue('date', undefined);
+                                        setFieldValue('value', undefined);
                                     }
                                 }
                             "
@@ -93,7 +85,7 @@ const onSubmit = handleSubmit((values) => {
                 <FormMessage />
             </FormItem>
         </FormField>
-        <slot name="actions" :submit="onSubmit" />
+        <slot name="actions" :submit="handleSubmit" />
     </form>
 </template>
 

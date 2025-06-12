@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/HeadingSmall.vue';
-import Step from '@/components/surveys/steps/Step.vue';
+import StepWrapper from '@/components/surveys/steps/StepWrapper.vue';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import AppLayout from '@/layouts/AppLayout.vue';
 import PatientsLayout from '@/layouts/patients/Layout.vue';
-import type { BreadcrumbItem, Patient, Resource, SharedData, StepResponse, Survey, SurveyRun } from '@/types';
+import type { BreadcrumbItem, Patient, Resource, SharedData, Survey, SurveyRun } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { useStepNavigation } from '@/composables/useStepNavigation';
 
 const props = defineProps<{
     patient: Resource<Patient>;
@@ -53,35 +53,9 @@ const breadcrumbItems: BreadcrumbItem[] = [
         }),
     },
 ];
-const computeProgress = (step: number) => {
-    const totalSteps = props.survey.data.steps?.length || 1;
-    const currentStepIndex = props.survey.data.steps?.findIndex((s) => s.id === step) || 0;
-    return Math.round((currentStepIndex / totalSteps) * 100);
-};
 
-const currentStep = ref<number>(props.survey.data.steps?.[0].id || 0);
-const progress = ref(computeProgress(currentStep.value));
-const stepResponses = ref<StepResponse<string>[]>([]);
-
-const next = (resp: StepResponse<string>) => {
-    // Check if there is already a response with step_id
-    const existingResponse = stepResponses.value.find((response) => response.step_id === resp.step_id);
-    if (existingResponse) {
-        // Update the existing response
-        existingResponse.value = resp.value;
-    } else {
-        // Add a new response
-        stepResponses.value.push(resp);
-    }
-
-    currentStep.value = resp.step_id + 1;
-    progress.value = computeProgress(currentStep.value);
-};
-
-const previous = (resp: StepResponse<string>) => {
-    currentStep.value = resp.step_id - 1;
-    progress.value = computeProgress(currentStep.value);
-};
+const { initialize, progress } = useStepNavigation(props.surveyRun.data.id);
+initialize(props.survey.data.steps);
 </script>
 
 <template>
@@ -98,11 +72,9 @@ const previous = (resp: StepResponse<string>) => {
 
                 <Progress v-model="progress" class="w-full" />
 
-                <Step
-                    v-if="survey.data.steps"
-                    :step="survey.data.steps.find((step) => step.id === currentStep) ?? survey.data.steps[0]"
-                    @submit="next"
-                    @previous="previous"
+                <StepWrapper
+                    :surveyRunId="surveyRun.data.id"
+                    :steps="survey.data.steps"
                 />
             </div>
         </PatientsLayout>

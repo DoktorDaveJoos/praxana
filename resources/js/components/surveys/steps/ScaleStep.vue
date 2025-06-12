@@ -5,14 +5,11 @@ import * as z from 'zod';
 
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Slider } from '@/components/ui/slider';
+import { useStepNavigation } from '@/composables/useStepNavigation';
 import { Step, StepResponse } from '@/types';
 
 const props = defineProps<{
     step: Step;
-}>();
-
-const emit = defineEmits<{
-    (e: 'submit', values: StepResponse<string>): void;
 }>();
 
 const formSchema = toTypedSchema(
@@ -28,16 +25,19 @@ const { handleSubmit } = useForm({
     },
 });
 
+const { handleStepSubmit, getNextStepId } = useStepNavigation();
 const onSubmit = handleSubmit((values) => {
-    emit('submit', {
+    handleStepSubmit({
         step_id: props.step.id,
-        value: values.scale.toString()
-    });
+        value: JSON.stringify(values.scale),
+        next_step_id: getNextStepId(props.step),
+        type: 'number',
+    } as StepResponse<number[]>);
 });
 </script>
 
 <template>
-    <form class="w-2/3 space-y-6" @submit="onSubmit">
+    <form class="w-full space-y-6" @submit="onSubmit">
         <FormField v-slot="{ componentField }" name="scale">
             <FormItem>
                 <FormControl>
