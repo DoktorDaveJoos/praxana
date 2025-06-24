@@ -131,6 +131,7 @@ export interface Choice {
 
 export interface StepResponse {
     value: string;
+    order: number;
     self_step_id: number;
     next_step_id: ?number;
     type: string;

@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useStepNavigation } from '@/composables/useStepNavigation';
 import { type Step } from '@/types';
 import { GraduationCap } from 'lucide-vue-next';
+import DialogStep from '@/components/surveys/steps/DialogStep.vue';
 
 const props = defineProps<{
     surveyRunId: string;
@@ -34,9 +35,11 @@ const componentMap: Record<string, any> = {
     number: NumberStep,
 };
 
-const mapComponent = (type: string) => {
-    // returns the component or `undefined` if not found
-    return componentMap[type];
+const mapComponent = (step: Step) => {
+    if (step && step.step_type === 'dialog') {
+        return DialogStep; // Special case for dialog steps
+    }
+    return componentMap[step.question_type];
 };
 </script>
 
@@ -57,28 +60,20 @@ const mapComponent = (type: string) => {
                 </template>
                 <template v-else>
                     <Skeleton class="h-4 w-full" />
-                    <Skeleton class="h-4 mt-1 w-4/5" />
+                    <Skeleton class="mt-1 h-4 w-4/5" />
                 </template>
             </CardDescription>
         </CardHeader>
         <CardContent>
             <template v-if="current">
-                <template v-if="isQuestion(current)">
-                    <component v-if="mapComponent(current?.question_type)" :is="mapComponent(current?.question_type)" :step="current">
-                        <template v-slot:actions="{ submit }">
-                            <div class="mt-6 flex justify-between">
-                                <Button variant="outline"> Abbrechen</Button>
-                                <Button @click="submit"> Weiter</Button>
-                            </div>
-                        </template>
-                    </component>
-                </template>
-                <template v-else>
-                    <div class="flex justify-between">
-                        <Button variant="outline">Zurück</Button>
-                        <Button> Verstanden!</Button>
-                    </div>
-                </template>
+                <component :is="mapComponent(current)" :survey-run-id="props.surveyRunId">
+                    <template v-slot:actions="{ submit }">
+                        <div class="mt-6 flex justify-between">
+                            <Button variant="outline"> Abbrechen</Button>
+                            <Button @click="submit"> Weiter</Button>
+                        </div>
+                    </template>
+                </component>
             </template>
         </CardContent>
     </Card>

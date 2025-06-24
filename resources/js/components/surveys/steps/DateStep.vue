@@ -44,8 +44,6 @@ const value = computed({
     set: (val) => val,
 });
 
-
-
 </script>
 
 <template>

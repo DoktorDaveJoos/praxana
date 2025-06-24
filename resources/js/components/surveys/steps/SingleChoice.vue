@@ -12,7 +12,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'submit', values: StepResponse<string>): void;
+    (e: 'submit', values: StepResponse): void;
 }>();
 
 const formSchema = toTypedSchema(z.object({
@@ -32,7 +32,7 @@ const onSubmit = handleSubmit((values) => {
 </script>
 
 <template>
-    <form class="w-2/3 space-y-6" @submit="onSubmit">
+    <form class="w-full space-y-6" @submit="onSubmit">
         <FormField v-slot="{ componentField }" type="radio" name="choice">
             <FormItem class="space-y-3">
                 <FormControl>
