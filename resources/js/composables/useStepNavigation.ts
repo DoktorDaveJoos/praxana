@@ -96,9 +96,8 @@ export function useStepNavigation(surveyRunId: string) {
                 'Current step is not set. Did you forget to call setSurvey()?',
             );
         }
-        console.log(id);
-        console.log(stepsStorage.value);
-        const step = stepsStorage.value.find((s) => parseInt(s.id) === parseInt(id));
+
+        const step = stepsStorage.value.find((s) => s.id == id);
         if (!step) {
             throw new Error(`Current step ID ${id} is invalid`);
         }
