@@ -5,14 +5,14 @@ import * as z from 'zod';
 
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { NumberField, NumberFieldContent, NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput } from '@/components/ui/number-field';
-import { Step, StepResponse } from '@/types';
+import { Step } from '@/types';
 
 const props = defineProps<{
     step: Step;
 }>();
 
 const emit = defineEmits<{
-    (e: 'submit', values: StepResponse<string>): void;
+    (e: 'submit', value: string, type: string): void;
 }>();
 
 const optional = props.step.options?.optional ?? false;
@@ -26,10 +26,7 @@ const { handleSubmit, setFieldValue } = useForm({
 });
 
 const onSubmit = handleSubmit((values) => {
-    emit('submit', {
-        step_id: props.step.id,
-        value: values.number?.toString() ?? null,
-    });
+    emit('submit', values.number?.toString() ?? '', 'number');
 });
 </script>
 

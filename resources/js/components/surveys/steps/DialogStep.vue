@@ -1,68 +1,31 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { StepResponse, Step } from '@/types';
-import { useStepNavigation } from '@/composables/useStepNavigation';
+import { Step } from '@/types';
 
-const props = defineProps<{
-    survey_run_id: string;
-    steps: Step[];
+defineProps<{
+    step: Step;
 }>();
 
 const emit = defineEmits<{
-    (e: 'submit', response: StepResponse): void;
+    (e: 'submit', value: string, type: string): void;
 }>();
-
-// Setup navigation composable
-const {
-    setSurvey,
-    getCurrent,
-    handleStepSubmit,
-    getNextStepId,
-} = useStepNavigation(props.survey_run_id);
-
-// Must initialize survey steps before using
-setSurvey(props.steps);
-
-// Reactive current step
-const currentStep = computed(() => getCurrent());
-
-// Placeholder for user answer; actual input is rendered via default slot
-const answer = ref<string>('');
 
 /**
  * Called when the user submits the dialog step
+ * For dialog steps, we just emit an acknowledgment value
  */
 function onSubmit() {
-    const nextId = getNextStepId();
-    const response: StepResponse = {
-        self_step_id: currentStep.value.id,
-        next_step_id: nextId ?? currentStep.value.id,
-        type: 'dialog',
-        value: answer.value,
-    };
-
-    // Persist and advance
-    handleStepSubmit(response);
-    // Emit to parent in case additional handling is needed
-    emit('submit', response);
+    emit('submit', 'acknowledged', 'dialog');
 }
 </script>
 
 <template>
-    <form class="w-full space-y-6" @submit.prevent="onSubmit">
-        <!--
-          Default slot should render question & input:
-          <DialogStep :steps="steps" @submit="...">
-            <template #default="{ step, answer }">
-              <label>{{ step.question }}</label>
-              <input v-model="answer" />
-            </template>
-        -->
-        <slot :step="currentStep" :answer.sync="answer" />
+    <div class="w-full space-y-6">
+        <!-- Dialog steps typically don't need form inputs, just display content -->
+        <!-- The step content is already shown in StepWrapper's CardDescription -->
 
         <!-- Actions (e.g. buttons) -->
         <slot name="actions" :submit="onSubmit" />
-    </form>
+    </div>
 </template>
 
 <style scoped>

@@ -5,11 +5,14 @@ import * as z from 'zod';
 
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Slider } from '@/components/ui/slider';
-import { useStepNavigation } from '@/composables/useStepNavigation';
-import { Step, StepResponse } from '@/types';
+import { Step } from '@/types';
 
-const props = defineProps<{
+defineProps<{
     step: Step;
+}>();
+
+const emit = defineEmits<{
+    (e: 'submit', value: string, type: string): void;
 }>();
 
 const formSchema = toTypedSchema(
@@ -25,14 +28,8 @@ const { handleSubmit } = useForm({
     },
 });
 
-const { handleStepSubmit, getNextStepId } = useStepNavigation();
 const onSubmit = handleSubmit((values) => {
-    handleStepSubmit({
-        step_id: props.step.id,
-        value: JSON.stringify(values.scale),
-        next_step_id: getNextStepId(props.step),
-        type: 'number',
-    } as StepResponse<number[]>);
+    emit('submit', JSON.stringify(values.scale), 'scale');
 });
 </script>
 

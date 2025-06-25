@@ -5,14 +5,14 @@ import * as z from 'zod';
 
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Step, StepResponse } from '@/types';
+import { Step } from '@/types';
 
-const props = defineProps<{
+defineProps<{
     step: Step;
 }>();
 
 const emit = defineEmits<{
-    (e: 'submit', values: StepResponse): void;
+    (e: 'submit', value: string, type: string): void;
 }>();
 
 const formSchema = toTypedSchema(z.object({
@@ -24,10 +24,7 @@ const { handleSubmit } = useForm({
 })
 
 const onSubmit = handleSubmit((values) => {
-    emit('submit', {
-        step_id: props.step.id,
-        value: values.choice
-    });
+    emit('submit', values.choice, 'single_choice');
 });
 </script>
 

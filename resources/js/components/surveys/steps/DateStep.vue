@@ -17,6 +17,10 @@ const props = defineProps<{
     step: Step;
 }>();
 
+const emit = defineEmits<{
+    (e: 'submit', value: string, type: string): void;
+}>();
+
 const df = new DateFormatter('de-DE', {
     dateStyle: 'long',
 });
@@ -44,10 +48,14 @@ const value = computed({
     set: (val) => val,
 });
 
+const onSubmit = handleSubmit((formValues) => {
+    emit('submit', formValues.value || '', 'date');
+});
+
 </script>
 
 <template>
-    <form class="space-y-8" @submit="handleSubmit">
+    <form class="space-y-8" @submit="onSubmit">
         <FormField name="value">
             <FormItem class="flex flex-col">
                 <Popover>
@@ -83,7 +91,7 @@ const value = computed({
                 <FormMessage />
             </FormItem>
         </FormField>
-        <slot name="actions" :submit="handleSubmit" />
+        <slot name="actions" :submit="onSubmit" />
     </form>
 </template>
 

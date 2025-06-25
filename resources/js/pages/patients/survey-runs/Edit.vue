@@ -2,12 +2,13 @@
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import StepWrapper from '@/components/surveys/steps/StepWrapper.vue';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Progress } from '@/components/ui/progress'
 import AppLayout from '@/layouts/AppLayout.vue';
 import PatientsLayout from '@/layouts/patients/Layout.vue';
 import type { BreadcrumbItem, Patient, Resource, SharedData, Survey, SurveyRun } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
 import { useStepNavigation } from '@/composables/useStepNavigation';
+import { computed, onMounted } from 'vue';
 
 const props = defineProps<{
     patient: Resource<Patient>;
@@ -54,8 +55,13 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
-const { initialize, progress } = useStepNavigation(props.surveyRun.data.id);
-initialize(props.survey.data.steps);
+const { setSurvey, progress } = useStepNavigation(props.surveyRun.data.id);
+
+// Initialize the survey steps
+onMounted(() => {
+    console.log('Setting survey steps for progress tracking...');
+    setSurvey(props.survey.data.steps);
+});
 </script>
 
 <template>

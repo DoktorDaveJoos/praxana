@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Checkbox } from '@/components/ui/checkbox';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Step, StepResponse } from '@/types';
+import { Step } from '@/types';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
@@ -11,7 +11,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'submit', values: StepResponse<string>): void;
+    (e: 'submit', value: string, type: string): void;
 }>();
 
 const optional = props.step.options?.optional ?? false;
@@ -33,10 +33,7 @@ const { handleSubmit } = useForm({
 });
 
 const onSubmit = handleSubmit((values) => {
-    emit('submit', {
-        step_id: props.step.id,
-        value: JSON.stringify(values.choices),
-    });
+    emit('submit', JSON.stringify(values.choices || []), 'multiple_choice');
 });
 </script>
 

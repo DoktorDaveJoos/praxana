@@ -7,102 +7,169 @@ import { computed } from 'vue';
  * Ensures `steps` and `currentStep` are always initialized and never null.
  */
 export function useStepNavigation(surveyRunId: string) {
-    // Persisted list of steps for this survey run
+    /* ------------------------------------------------------------------
+     * Internal utilities
+     * ------------------------------------------------------------------ */
+
+    /**
+     * Make sure every step has a numeric `order` property and sort them.
+     * If no valid `order` is provided, fall back to the array index.
+     */
+    function normaliseSteps(raw: Step[]): Step[] {
+        return raw
+            .map((step, idx) => ({
+                ...step,
+                order:
+                    typeof (step as any).order === 'number'
+                        ? (step as any).order
+                        : Number((step as any).order) || idx,
+            }))
+            .sort((a, b) => (a as any).order - (b as any).order);
+    }
+
+    /* ------------------------------------------------------------------
+     * Persistent state (localStorage‑backed)
+     * ------------------------------------------------------------------ */
+
     const stepsStorage = useStorage<Step[]>(
         `survey_${surveyRunId}_steps`,
         [],
-        localStorage
+        localStorage,
     );
 
-    // Persisted current step ID for this survey run
     const currentStepIdStorage = useStorage<number | null>(
         `survey_${surveyRunId}_current_step`,
         null,
-        localStorage
+        localStorage,
     );
 
-    // Persisted responses for this survey run
     const responsesStorage = useStorage<StepResponse[]>(
         `survey_${surveyRunId}_responses`,
         [],
-        localStorage
+        localStorage,
     );
 
-    /**
-     * Retrieve the last saved response (highest self_order).
-     */
+    /* ------------------------------------------------------------------
+     * Helpers
+     * ------------------------------------------------------------------ */
+
+    /** Retrieve the last saved response (highest self_order). */
     function getLastResponse(): StepResponse | undefined {
-        return responsesStorage.value.reduce<StepResponse | undefined>((prev, cur) => {
-            if (!prev || cur.order > prev.order) return cur;
-            return prev;
-        }, undefined);
+        return responsesStorage.value.reduce<StepResponse | undefined>(
+            (prev, cur) => {
+                if (!prev || cur.order > prev.order) return cur;
+                return prev;
+            },
+            undefined,
+        );
     }
 
-    /**
-     * Determine the default step: either next after last response or first in list.
-     */
+    /** Determine the default step: either next after last response, the step with order 0, or the one with lowest order. */
     function getDefaultStep(): Step {
         if (stepsStorage.value.length === 0) {
             throw new Error(
-                `No steps available for survey ${surveyRunId}. Did you forget to call setSurvey()?`
+                `No steps available for survey ${surveyRunId}. Did you forget to call setSurvey()?`,
             );
         }
 
         const last = getLastResponse();
         if (last) {
-            const next = stepsStorage.value.find(s => s.id === last.next_step_id);
+            const next = stepsStorage.value.find(
+                (s) => s.id === last.next_step_id,
+            );
             if (next) return next;
         }
 
-        return stepsStorage.value[0];
+        // Look for a step with order 0
+        const zeroOrderStep = stepsStorage.value.find((s) => s.order === 0);
+        if (zeroOrderStep) return zeroOrderStep;
+
+        // If no step with order 0, get the one with the lowest order
+        return stepsStorage.value.sort((a, b) => a.order - b.order)[0];
     }
 
-    /**
-     * Initialize survey steps and set the current step.
-     * @param surveySteps Array of steps for this survey
-     */
-    function setSurvey(surveySteps: Step[]) {
-        if (!surveySteps || surveySteps.length === 0) {
-            throw new Error('setSurvey requires a non-empty array of steps');
-        }
-        stepsStorage.value = surveySteps;
-        const defaultStep = getDefaultStep();
-        currentStepIdStorage.value = defaultStep.id;
-    }
-
-    /**
-     * Get current Step object; throws if not set.
-     */
+    /** Get the current Step object; throws if not set. */
     function getCurrent(): Step {
         const id = currentStepIdStorage.value;
         if (id === null) {
             throw new Error(
-                'Current step is not set. Did you forget to call setSurvey()?'
+                'Current step is not set. Did you forget to call setSurvey()?',
             );
         }
-        const step = stepsStorage.value.find(s => s.id === id);
+        console.log(id);
+        console.log(stepsStorage.value);
+        const step = stepsStorage.value.find((s) => parseInt(s.id) === parseInt(id));
         if (!step) {
             throw new Error(`Current step ID ${id} is invalid`);
         }
         return step;
     }
 
-    /**
-     * Compute progress percentage (0-100).
-     */
-    const progress = computed(() => {
-        const all = stepsStorage.value;
-        const current = getCurrent();
-        const idx = all.findIndex(s => s.id === current.id);
-        return (idx / all.length) * 100;
+    /* ------------------------------------------------------------------
+     * Public API
+     * ------------------------------------------------------------------ */
+
+    /** Initialize survey steps and set the current step. */
+    function setSurvey(surveySteps: Step[]) {
+        if (!surveySteps || surveySteps.length === 0) {
+            throw new Error('setSurvey requires a non‑empty array of steps');
+        }
+        stepsStorage.value = normaliseSteps(surveySteps);
+
+        // Keep an already‑saved current step if it exists
+        if (
+            currentStepIdStorage.value === null ||
+            !stepsStorage.value.some((s) => s.id === currentStepIdStorage.value)
+        ) {
+            const defaultStep = getDefaultStep();
+            currentStepIdStorage.value = defaultStep.id;
+        }
+    }
+
+    /** Reactive current step computed property. */
+    const currentStep = computed(() => {
+        try {
+            return getCurrent();
+        } catch {
+            return null;
+        }
     });
 
-    /**
-     * Submit a response and advance current step to the response's next_step_id.
-     */
+    /** -----------------------------------------------------------------
+     *  Progress (0‑100)
+     *  -----------------------------------------------------------------
+     *  Uses the step’s *position* in the sorted list instead of counting
+     *  “completed” orders, so duplicate `order` values can’t inflate the
+     *  percentage or make it overshoot 100%.
+     * ------------------------------------------------------------------ */
+    const progress = computed(() => {
+        const steps = stepsStorage.value;
+        const currentId = getCurrent()?.id;
+
+        // Nothing to report yet
+        if (!steps.length || currentId === null) return 0;
+
+        // Work with a consistently ordered array
+        const ordered = [...steps].sort((a, b) => a.order - b.order);
+        const idx = ordered.findIndex((s) => s.id === currentId);
+
+        console.log(ordered);
+
+        if (idx === -1) {
+            console.warn(
+                `⚠️ Progress: step ID ${currentId} not found — returning 0 %`,
+            );
+            return 0;
+        }
+
+        const pct = ((idx + 1) / ordered.length) * 100;
+        return Number(pct.toFixed(1)); // 1‑dp precision
+    });
+
+    /** Submit a response and advance the current step to the next step in order. */
     function handleStepSubmit(response: StepResponse) {
         const idx = responsesStorage.value.findIndex(
-            r => r.self_step_id === response.self_step_id
+            (r) => r.self_step_id === response.self_step_id,
         );
         if (idx >= 0) {
             responsesStorage.value[idx] = response;
@@ -110,12 +177,27 @@ export function useStepNavigation(surveyRunId: string) {
             responsesStorage.value.push(response);
         }
 
-        // Advance to next or default
-        const nextId = response.next_step_id;
-        const nextStep = stepsStorage.value.find(s => s.id === nextId);
-        currentStepIdStorage.value = nextStep
-            ? nextStep.id
-            : getDefaultStep().id;
+        const current = getCurrent();
+        const nextId = getNextStepId();
+
+        console.log('🔄 Step navigation debug:', {
+            currentStep: current.id,
+            currentOrder: (current as any).order,
+            nextStepFound: nextId ?? 'none',
+            totalSteps: stepsStorage.value.length,
+        });
+
+        if (nextId !== null) {
+            currentStepIdStorage.value = nextId;
+            const step = stepsStorage.value.find((s) => s.id === nextId)!;
+            console.log(
+                '✅ Advanced to next step:',
+                step.id,
+                (step as any).title,
+            );
+        } else {
+            console.log('🏁 Reached end of survey - staying on current step');
+        }
     }
 
     /**
@@ -123,27 +205,63 @@ export function useStepNavigation(surveyRunId: string) {
      */
     function goToStep(stepOrId: Step | number) {
         const id = typeof stepOrId === 'number' ? stepOrId : stepOrId.id;
-        if (!stepsStorage.value.find(s => s.id === id)) {
+
+        // Verify step exists before setting it as current
+        const targetStep = stepsStorage.value.find((s) => s.id === id);
+        if (!targetStep) {
+            console.error(
+                `❌ Cannot navigate: Step ID ${id} not found in steps array`,
+            );
             throw new Error(`Step ID ${id} not found`);
         }
+
+        // Update the current step ID
+        console.log(`🔄 Navigating to step ID ${id} (${targetStep.title})`);
         currentStepIdStorage.value = id;
+
+        // Verify the update was successful
+        if (currentStepIdStorage.value !== id) {
+            console.error(
+                `❌ Failed to update current step ID: expected ${id}, got ${currentStepIdStorage.value}`,
+            );
+        }
     }
 
     /**
-     * Move to the previous step, or default if at start.
+     * Move to the previous step (by `order`). If already at the first
+     * step, throw an error indicating no previous step exists.
+     *
+     * @throws Error when there is no previous step available
      */
     function goToPrevious() {
         const current = getCurrent();
-        const prev = stepsStorage.value.find(s => s.order === current.order - 1);
-        goToStep(prev ? prev.id : getDefaultStep().id);
+
+        // Find the step with the highest order that is still < current.order
+        const prev = stepsStorage.value
+            .filter((s) => s.order < current.order)
+            .sort((a, b) => b.order - a.order)[0];
+
+        if (!prev) {
+            // If there's no previous step, throw an error
+            const errorMsg = `No previous step available. Currently at step ${current.id} (${current.title}) with order ${current.order}`;
+            console.error('⚠️ ' + errorMsg);
+            throw new Error(errorMsg);
+        }
+
+        // Navigate to the previous step
+        console.log(`⬅️ Going to previous step: ${prev.id} (${prev.title})`);
+        goToStep(prev.id);
     }
 
     /**
-     * Get the ID of the next step, or null if at end.
+     * Return the ID of the next step (by `order`) or `null` if we're at the end.
+     * This is resilient to sparse / non‑sequential order values (e.g. 10, 20, 30).
      */
     function getNextStepId(): number | null {
         const current = getCurrent();
-        const next = stepsStorage.value.find(s => s.order === current.order + 1);
+        const next = stepsStorage.value
+            .filter((s) => s.order > current.order)
+            .sort((a, b) => a.order - b.order)[0];
         return next ? next.id : null;
     }
 
@@ -152,12 +270,15 @@ export function useStepNavigation(surveyRunId: string) {
         setSurvey,
         // State getters
         getCurrent,
+        currentStep,
         progress,
         // Navigation
         goToStep,
         getNextStepId,
         goToPrevious,
         // Submission
-        handleStepSubmit
+        handleStepSubmit,
+        // Debug access to responses
+        responses: responsesStorage,
     };
 }

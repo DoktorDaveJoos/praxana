@@ -5,14 +5,14 @@ import * as z from 'zod';
 
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { Step, StepResponse } from '@/types';
+import { Step } from '@/types';
 
-const props = defineProps<{
+defineProps<{
     step: Step;
 }>();
 
 const emit = defineEmits<{
-    (e: 'submit', values: StepResponse<string>): void;
+    (e: 'submit', value: string, type: string): void;
 }>();
 
 const formSchema = toTypedSchema(
@@ -26,16 +26,13 @@ const { handleSubmit } = useForm({
 });
 
 const onSubmit = handleSubmit((values) => {
-    emit('submit', {
-        step_id: props.step.id,
-        value: values.text
-    });
+    emit('submit', values.text, 'text');
 });
 </script>
 
 <template>
     <form class="space-y-6" @submit="onSubmit">
-        <FormField v-slot="{ componentField }" type="radio" name="text">
+        <FormField v-slot="{ componentField }" name="text">
             <FormItem class="space-y-3">
                 <FormControl>
                     <FormItem class="flex items-center space-y-0 gap-x-3">
