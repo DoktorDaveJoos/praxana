@@ -112,6 +112,8 @@ export interface Step {
     step_type: StepType;
     question_type: string;
     choices: ?Choice[];
+    next_step_id: number,
+    previous_step_id: number,
 }
 
 export interface StepOptions<T> {

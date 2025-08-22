@@ -18,6 +18,9 @@ class StepResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $steps = $this->survey->steps->sortBy('order')->values();
+        $currentIndex = $steps->search(fn($step) => $step->id === $this->id);
+
         return [
             'id' => $this->id,
             'survey_id' => $this->survey_id,
@@ -28,6 +31,8 @@ class StepResource extends JsonResource
             'question_type' => $this->question_type,
             'options' => $this->options,
             'choices' => ChoiceResource::collection($this->whenLoaded('choices')),
+            'next_step_id' => $steps->get($currentIndex + 1)?->id,
+            'previous_step_id' => $steps->get($currentIndex - 1)?->id,
         ];
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\SurveyRunStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateSurveyRunRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class UpdateSurveyRunRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +24,28 @@ class UpdateSurveyRunRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'status' => [
+                'sometimes',
+                'required',
+                Rule::enum(SurveyRunStatus::class)
+            ],
+            'started_at' => [
+                'sometimes',
+                'nullable',
+                'date'
+            ],
+            'finished_at' => [
+                'sometimes',
+                'nullable',
+                'date',
+                'after_or_equal:started_at'
+            ],
+            'current_step_id' => [
+                'sometimes',
+                'nullable',
+                'integer',
+                'exists:steps,id'
+            ]
         ];
     }
 }

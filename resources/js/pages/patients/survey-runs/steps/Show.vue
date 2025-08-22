@@ -5,14 +5,16 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import AppLayout from '@/layouts/AppLayout.vue';
 import PatientsLayout from '@/layouts/patients/Layout.vue';
-import type { BreadcrumbItem, Patient, Resource, SharedData, Survey, SurveyRun } from '@/types';
-import { Head, usePage } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
+import type { BreadcrumbItem, Patient, Resource, SharedData, Step, Survey, SurveyRun } from '@/types';
+import { Head, router, usePage } from '@inertiajs/vue3';
 
 const props = defineProps<{
     patient: Resource<Patient>;
     surveyRun: Resource<SurveyRun>;
+    // response: Resource<Response>,
+    step: Resource<Step>;
     survey: Resource<Survey>;
+    progress: number;
 }>();
 
 const breadcrumbItems: BreadcrumbItem[] = [
@@ -54,13 +56,37 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
-const { setSurvey, progress } = useStepNavigation(props.surveyRun.data.id);
+const handleNext = () => {
+    router.put(
+        route('practices.patients.survey-runs.steps.show', {
+            practice: usePage<SharedData>().props.auth.practice.id,
+            patient: props.patient.data.id,
+            survey_run: props.surveyRun.data.id,
+            step: props.step.data.next_step_id,
+        }),
+        {},
+    );
 
-// Initialize the survey steps
-onMounted(() => {
-    console.log('Setting survey steps for progress tracking...');
-    setSurvey(props.survey.data.steps);
-});
+    // router.visit(
+    //     route('practices.patients.survey-runs.steps.show', {
+    //         practice: usePage<SharedData>().props.auth.practice.id,
+    //         patient: props.patient.data.id,
+    //         survey_run: props.surveyRun.data.id,
+    //         step: props.step.data.next_step_id,
+    //     }),
+    // );
+};
+
+const handlePrev = () => {
+    router.visit(
+        route('practices.patients.survey-runs.steps.show', {
+            practice: usePage<SharedData>().props.auth.practice.id,
+            patient: props.patient.data.id,
+            survey_run: props.surveyRun.data.id,
+            step: props.step.data.previous_step_id,
+        }),
+    );
+};
 </script>
 
 <template>
@@ -75,9 +101,9 @@ onMounted(() => {
                     <Badge variant="secondary" class="font-mono">v.{{ survey.data.version }}</Badge>
                 </div>
 
-                <Progress v-model="progress" class="w-full" />
+                <Progress :model-value="progress" class="w-full" />
 
-                <StepWrapper :surveyRunId="surveyRun.data.id" :steps="survey.data.steps" />
+                <StepWrapper :step="step.data" @next="handleNext" @prev="handlePrev" />
             </div>
         </PatientsLayout>
     </AppLayout>

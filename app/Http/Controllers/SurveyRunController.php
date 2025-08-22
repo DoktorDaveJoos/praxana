@@ -99,7 +99,15 @@ class SurveyRunController extends Controller
      */
     public function update(UpdateSurveyRunRequest $request, SurveyRun $surveyRun)
     {
-        //
+        $validated = $request->validated();
+
+        // Update the survey run with validated data
+        $surveyRun->update($validated);
+
+        return response()->json([
+            'message' => 'Survey run updated successfully',
+            'survey_run' => $surveyRun->fresh()
+        ]);
     }
 
     /**

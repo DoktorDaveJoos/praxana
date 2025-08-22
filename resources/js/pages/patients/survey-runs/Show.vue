@@ -105,10 +105,11 @@ const infoText = computed(() => {
                             um mit dem Ausfüllen zu beginnen.
                             <Link
                                 :href="
-                                    route('practices.patients.survey-runs.edit', {
+                                    route('practices.patients.survey-runs.steps.show', {
                                         practice: usePage<SharedData>().props.auth.practice.id,
                                         patient: props.patient.data.id,
                                         survey_run: props.surveyRun.data.id,
+                                        step: props.surveyRun.data.current_step_id,
                                     })
                                 "
                                 class="text-primary-foreground bg-primary hover:bg-primary/90 mt-4 rounded-md px-4 py-2 font-medium transition-colors"

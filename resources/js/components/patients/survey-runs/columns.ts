@@ -47,7 +47,9 @@ export const columns: ColumnDef<SurveyRun & { patientId: string }>[] = [
                 {
                     class: `inline-flex ${statusMatcher(row.getValue('status'))}`,
                 },
-                row.getValue('status'),
+                {
+                    default: () => row.getValue('status'),
+                },
             );
         },
     },

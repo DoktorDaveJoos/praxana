@@ -25,6 +25,7 @@ class SurveyRunResource extends JsonResource
             'started_at' => $this->started_at?->format('Y-m-d H:i:s'),
             'finished_at' => $this->finished_at?->format('Y-m-d H:i:s'),
             'ai_analysis' => $this->ai_analysis,
+            'current_step_id' => $this->current_step_id ?? $this->survey->steps->sortBy('order')->first()?->id,
             'responses' => $this->whenLoaded('responses', function () {
                 return ResponseResource::collection($this->responses);
             }),
