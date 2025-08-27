@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PracticeController;
+use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\SurveyRunController;
 use App\Http\Controllers\SurveyStepController;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +46,9 @@ Route::middleware([
         'practices/{practice}/patients/{patient}/survey-runs/{survey_run}/summary',
         [SurveyStepController::class, 'summary']
     )->name('practices.patients.survey-runs.summary');
+
+    Route::resource('practices.surveys', SurveyController::class)
+        ->only(['index', 'show']);
 
 });
 

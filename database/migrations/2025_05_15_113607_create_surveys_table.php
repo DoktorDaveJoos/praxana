@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('surveys', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
+
+            $table->string('practice_hash', 64)->index();
 
             $table->string('name'); // z.B. "Check-up 35+"
             $table->text('description')->nullable();

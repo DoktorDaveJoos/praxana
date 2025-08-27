@@ -2,19 +2,19 @@
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { MoreHorizontal } from 'lucide-vue-next'
-import { Patient, SharedData } from '@/types';
+import { Survey, SharedData } from '@/types';
 import { usePage, router } from '@inertiajs/vue3';
 
 const props = defineProps<{
-    patient: Patient
+    survey: Survey
 }>()
 
 const page = usePage<SharedData>();
 
-function showPatient() {
-    router.visit(route('practices.patients.show', {
+function showSurvey() {
+    router.visit(route('practices.surveys.show', {
         practice: page.props.auth.practice.id,
-        patient: props.patient.id,
+        survey: props.survey.id,
     }));
 }
 </script>
@@ -29,9 +29,9 @@ function showPatient() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
             <DropdownMenuLabel>Aktionen</DropdownMenuLabel>
-            <DropdownMenuItem @click="showPatient">Patient anzeigen</DropdownMenuItem>
+            <DropdownMenuItem @click="showSurvey">Fragebogen anzeigen</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem class="text-destructive">Patient löschen</DropdownMenuItem>
+            <DropdownMenuItem class="text-destructive">Fragebogen löschen</DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>
 </template>

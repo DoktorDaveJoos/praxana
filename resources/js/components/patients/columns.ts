@@ -68,7 +68,7 @@ export const columns: ColumnDef<Patient>[] = [
 
             return h(
                 'div',
-                { class: 'relative' },
+                { class: 'relative text-right' },
                 h(DataTableDropdown, {
                     patient,
                 }),

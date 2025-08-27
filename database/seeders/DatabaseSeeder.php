@@ -12,6 +12,7 @@ use App\Models\SurveyRun;
 use App\QuestionType;
 use App\StepType;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str; // <-- add this
 use Throwable;
 
 class DatabaseSeeder extends Seeder
@@ -24,12 +25,15 @@ class DatabaseSeeder extends Seeder
         $practice = Practice::first();
         throw_if(! $practice, 'No practice found - register a user first');
 
+        // Patients belong to this practice
         $patients = Patient::factory(10)->create([
             'practice_hash' => $practice->getHash(),
         ]);
 
-        // Create surveys
-        $surveys = Survey::factory(10)->create();
+        // Create surveys scoped to the same practice and ensure UUID is set
+        $surveys = Survey::factory(10)->create([
+            'practice_hash' => $practice->getHash(),
+        ]);
 
         foreach ($surveys as $survey) {
             $stepsCount = rand(5, 10);
@@ -61,17 +65,14 @@ class DatabaseSeeder extends Seeder
                 ]);
 
                 $survey->steps->each(function (Step $step) use ($surveyRun) {
-                    // Only answer non-dialog steps that actually have a question type
                     if ($step->step_type !== StepType::Dialog && $step->question_type) {
-
-                        // Ensure only ONE response per (survey_run_id, step_id)
                         $alreadyExists = Response::where('survey_run_id', $surveyRun->id)
                             ->where('step_id', $step->id)
                             ->exists();
 
                         if (! $alreadyExists) {
                             Response::factory()
-                                ->forStep($step) // <- sets value + type based on the step's question_type
+                                ->forStep($step)
                                 ->create([
                                     'survey_run_id' => $surveyRun->id,
                                     'step_id'       => $step->id,

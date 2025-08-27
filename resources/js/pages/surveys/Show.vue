@@ -12,7 +12,7 @@ const props = defineProps<{
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
-        title: 'Patienten',
+        title: 'Fragebögen',
         href: route('practices.patients.index', {
             practice: usePage<SharedData>().props.auth.practice.id,
         }),
@@ -29,7 +29,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Patienten" />
+        <Head title="Fragebögen" />
 
         <PatientsLayout :patient="patient">
             <div class="space-y-6">

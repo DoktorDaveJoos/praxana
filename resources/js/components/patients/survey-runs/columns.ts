@@ -66,7 +66,7 @@ export const columns: ColumnDef<SurveyRun & { patientId: string }>[] = [
 
             return h(
                 'div',
-                { class: 'relative' },
+                { class: 'relative text-right' },
                 h(DataTableDropdown, {
                     surveyRun: surveyRun,
                     patientId: row.original.patientId,

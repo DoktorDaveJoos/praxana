@@ -89,6 +89,8 @@ const onSubmit = handleSubmit((values) => {
         },
     );
 });
+
+const selectableSurveyColumns = selectSurveyColumns({ withSelection: true });
 </script>
 
 <template>
@@ -116,7 +118,7 @@ const onSubmit = handleSubmit((values) => {
                                             <FormItem>
                                                 <FormControl>
                                                     <DataTable
-                                                        :columns="selectSurveyColumns"
+                                                        :columns="selectableSurveyColumns"
                                                         :data="surveys.data"
                                                         @update:selectedRows="(selected) => handleChange(selected.map((survey) => survey.id))"
                                                     />

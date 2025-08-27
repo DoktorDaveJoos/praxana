@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, BookUser } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, BookUser, ClipboardList } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const page = usePage<SharedData>();
@@ -22,6 +22,13 @@ const mainNavItems: NavItem[] = [
             practice: page.props.auth.practice.id,
         }),
         icon: BookUser,
+    },
+    {
+        title: 'Fragebögen',
+        href: route('practices.surveys.index', {
+            practice: page.props.auth.practice.id,
+        }),
+        icon: ClipboardList,
     },
 ];
 

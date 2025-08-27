@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSurveyRequest;
 use App\Http\Requests\UpdateSurveyRequest;
+use App\Http\Resources\SurveyResource;
+use App\Models\Practice;
 use App\Models\Survey;
 
 class SurveyController extends Controller
@@ -11,9 +13,13 @@ class SurveyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Practice $practice)
     {
-        //
+        return inertia('surveys/Index', [
+            'surveys' => SurveyResource::collection(
+                Survey::where('practice_hash', $practice->getHash())->get()
+            ),
+        ]);
     }
 
     /**
