@@ -37,6 +37,12 @@ export function selectSurveyColumns(options?: { withSelection?: boolean }): Colu
             cell: ({ row }) => h('div', { class: 'text-left text-primary font-medium' }, row.getValue('name')),
         },
         {
+            accessorKey: 'description',
+            enableHiding: false,
+            header: () => h('div', { class: 'text-left' }, 'Beschreibung'),
+            cell: ({ row }) => h('div', { class: 'text-left text-primary' }, row.getValue('descriptiom') ?? '-'),
+        },
+        {
             // @todo adapt size of column regarding display size
             accessorKey: 'id',
             header: () => h('div', { class: 'text-left' }, 'ID'),
