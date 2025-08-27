@@ -97,16 +97,19 @@ class SurveyRunController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSurveyRunRequest $request, SurveyRun $surveyRun)
+    public function update(Practice $practice, Patient $patient, SurveyRun $surveyRun, UpdateSurveyRunRequest $request)
     {
+        $this->authorize('update', [SurveyRun::class, $practice, $patient, $surveyRun]);
+
         $validated = $request->validated();
 
         // Update the survey run with validated data
         $surveyRun->update($validated);
 
-        return response()->json([
-            'message' => 'Survey run updated successfully',
-            'survey_run' => $surveyRun->fresh()
+        return redirect()->route('practices.patients.survey-runs.show', [
+            'practice' => $practice,
+            'patient' => $patient,
+            'survey_run' => $surveyRun
         ]);
     }
 

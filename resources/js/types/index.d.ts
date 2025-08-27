@@ -4,7 +4,7 @@ import type { Config } from 'ziggy-js';
 
 export interface Auth {
     user: User;
-    practice: Practice
+    practice: Practice;
 }
 
 export interface BreadcrumbItem {
@@ -95,12 +95,10 @@ export interface Response {
     id: string;
     survey_run_id: string;
     step_id: string;
+    choice_id: number | null;
     question?: string;
-    choice_id?: number;
-    type: string;
-    value?: string,
-    created_at: string;
-    updated_at: string;
+    question_type: QuestionType;
+    value: string | number | Choice | Choice[]; // union to cover all cases
 }
 
 export interface Step {
@@ -112,14 +110,15 @@ export interface Step {
     step_type: StepType;
     question_type: string;
     choices: ?Choice[];
-    next_step_id: number,
-    previous_step_id: number,
+    response: Response;
+    next_step_id: number;
+    previous_step_id: number;
 }
 
 export interface StepOptions<T> {
     min: T;
     max: T;
-    optional: boolean
+    optional: boolean;
 }
 
 export interface Choice {
@@ -127,17 +126,15 @@ export interface Choice {
     step_id: string;
     label: string;
     value: string;
-    order: number;
-    optional_next_step: ?number;
+    order: number | null;
+    optional_next_step: number | null;
 }
 
-export interface StepResponse {
-    value: string;
-    order: number;
-    self_step_id: number;
-    next_step_id: ?number;
-    type: string;
-}
+export type StepResponse =
+    | { type: 'text'; value?: string }
+    | { type: 'number'; value?: number }
+    | { type: 'single_choice'; value?: Choice }
+    | { type: 'multiple_choice'; value?: Choice[] };
 
 export interface ResourceCollection<T> {
     data: T[];
@@ -149,7 +146,6 @@ export interface Resource<T> {
 
 export interface DataTableOptions {
     filters: {
-        columns: bool
-    }
+        columns: bool;
+    };
 }
-

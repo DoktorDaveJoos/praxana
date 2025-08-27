@@ -47,12 +47,16 @@ export const columns: ColumnDef<Patient>[] = [
         accessorKey: 'insurance_type',
         header: () => h('div', { class: 'text-left' }, 'Versicherungtyp'),
         cell: ({ row }) => {
+            const type = row.getValue('insurance_type') as string | null | undefined;
+
+            if (!type) {
+                return h('span', { class: 'text-left text-xs text-muted-foreground' }, '-');
+            }
+
             return h(
                 Badge,
-                {
-                    class: row.getValue('insurance_type') == null ? 'hidden' : 'inline-flex',
-                },
-                row.getValue('insurance_type'),
+                { class: 'inline-flex' },
+                { default: () => String(type) },
             );
         },
     },

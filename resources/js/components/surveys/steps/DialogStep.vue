@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { Step } from '@/types';
+import { Step, StepResponse } from '@/types';
 
 defineProps<{
     step: Step;
 }>();
 
-const emit = defineEmits<{
-    (e: 'submit', value: string, type: string): void;
+const emits = defineEmits<{
+    (e: 'submit', data: StepResponse): void;
 }>();
 
 /**
  * Called when the user submits the dialog step
  * For dialog steps, we just emit an acknowledgment value
  */
-function onSubmit() {
-    emit('submit', 'acknowledged', 'dialog');
-}
+const onSubmit = () => {
+    emits('submit', { value: 'acknowledged', type: 'dialog' });
+};
 </script>
 
 <template>
-    <div class="w-full space-y-6">
+    <form class="space-y-6" @submit.prevent="onSubmit">
         <!-- Dialog steps typically don't need form inputs, just display content -->
         <!-- The step content is already shown in StepWrapper's CardDescription -->
 
         <!-- Actions (e.g. buttons) -->
-        <slot name="actions" :submit="onSubmit" />
-    </div>
+        <slot name="actions" />
+    </form>
 </template>
 
 <style scoped>

@@ -5,13 +5,12 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import AppLayout from '@/layouts/AppLayout.vue';
 import PatientsLayout from '@/layouts/patients/Layout.vue';
-import type { BreadcrumbItem, Patient, Resource, SharedData, Step, Survey, SurveyRun } from '@/types';
+import type { BreadcrumbItem, Patient, Resource, SharedData, Step, StepResponse, Survey, SurveyRun } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 
 const props = defineProps<{
     patient: Resource<Patient>;
     surveyRun: Resource<SurveyRun>;
-    // response: Resource<Response>,
     step: Resource<Step>;
     survey: Resource<Survey>;
     progress: number;
@@ -56,15 +55,18 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
-const handleNext = () => {
+const handleNext = (e: StepResponse) => {
+
+    console.log(e);
+
     router.put(
         route('practices.patients.survey-runs.steps.show', {
             practice: usePage<SharedData>().props.auth.practice.id,
             patient: props.patient.data.id,
             survey_run: props.surveyRun.data.id,
-            step: props.step.data.next_step_id,
+            step: props.step.data.id,
         }),
-        {},
+        e,
     );
 
     // router.visit(
@@ -85,6 +87,7 @@ const handlePrev = () => {
             survey_run: props.surveyRun.data.id,
             step: props.step.data.previous_step_id,
         }),
+        { preserveState: true },
     );
 };
 </script>

@@ -22,15 +22,14 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->foreignId('choice_id')
-                ->nullable()
-                ->constrained('choices')
-                ->nullOnDelete();
-
             // e.g. "text", "number", "date", "boolean"
             $table->string('type');
-            // free text or number
-            $table->text('value')->nullable();
+
+            // free text or number, array
+            $table->json('value')->nullable();
+
+            // determines if specific step is skipped
+            $table->boolean('is_skipped')->default(false);
 
             $table->timestamps();
         });

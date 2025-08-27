@@ -29,27 +29,16 @@ export const columns: ColumnDef<SurveyRun & { patientId: string }>[] = [
         accessorKey: 'status',
         header: () => h('div', { class: 'text-left' }, 'Status'),
         cell: ({ row }) => {
-            const statusMatcher = (status: string) => {
-                switch (status) {
-                    case 'completed':
-                        return '';
-                    case 'pending':
-                        return 'bg-muted text-primary';
-                    case 'aborted':
-                        return 'bg-destructive text-primary-foreground';
-                    default:
-                        return 'default';
-                }
-            };
+            const status = String(row.getValue('status') ?? '');
+
+            // Prefer a prop over utility classes if your Badge supports variants
+            const variant =
+                status === 'completed' ? 'default' : status === 'pending' ? 'secondary' : status === 'aborted' ? 'destructive' : 'default';
 
             return h(
                 Badge,
-                {
-                    class: `inline-flex ${statusMatcher(row.getValue('status'))}`,
-                },
-                {
-                    default: () => row.getValue('status'),
-                },
+                { class: 'inline-flex', variant },
+                { default: () => status }
             );
         },
     },

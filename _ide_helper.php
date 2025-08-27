@@ -22654,6 +22654,39 @@ namespace Illuminate\Support\Facades {
             }
     }
 
+namespace Prism\Prism\Facades {
+    /**
+     * 
+     *
+     */
+    class PrismServer {
+        /**
+         * 
+         *
+         * @param \Closure():PendingRequest|callable():PendingRequest $prism
+         * @static 
+         */
+        public static function register($name, $prism)
+        {
+            /** @var \Prism\Prism\PrismServer $instance */
+            return $instance->register($name, $prism);
+        }
+
+        /**
+         * 
+         *
+         * @return \Prism\Prism\Collection<int, array{name: string, prism: Closure():PendingRequest|callable():PendingRequest}>
+         * @static 
+         */
+        public static function prisms()
+        {
+            /** @var \Prism\Prism\PrismServer $instance */
+            return $instance->prisms();
+        }
+
+            }
+    }
+
 namespace Illuminate\Http {
     /**
      * 
@@ -27597,6 +27630,7 @@ namespace  {
     class Validator extends \Illuminate\Support\Facades\Validator {}
     class View extends \Illuminate\Support\Facades\View {}
     class Vite extends \Illuminate\Support\Facades\Vite {}
+    class PrismServer extends \Prism\Prism\Facades\PrismServer {}
 }
 
 

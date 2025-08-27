@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Illuminate\Support\Carbon;
+
 enum QuestionType: string
 {
     case MultipleChoice = 'multiple_choice';
@@ -10,4 +12,5 @@ enum QuestionType: string
     case Number = 'number';
     case Date = 'date';
     case Scale = 'scale';
+//    case Boolean = 'boolean';
 }

@@ -26,7 +26,7 @@ class ResponseResource extends JsonResource
             'choice_id' => $this->choice_id,
             'question' => $this->step->content,
             'question_type' => $this->type,
-            'value' => $this->type->cast($this->value),
+            'value' => $this->value,
         ];
     }
 }

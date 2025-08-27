@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { Step } from '@/types';
+import { Step, StepResponse } from '@/types';
 import { DateFormatter, parseDate } from '@internationalized/date';
 import { toTypedSchema } from '@vee-validate/zod';
 import { CalendarIcon } from 'lucide-vue-next';
@@ -17,8 +17,8 @@ const props = defineProps<{
     step: Step;
 }>();
 
-const emit = defineEmits<{
-    (e: 'submit', value: string, type: string): void;
+const emits = defineEmits<{
+    (e: 'submit', data: StepResponse): void;
 }>();
 
 const df = new DateFormatter('de-DE', {
@@ -49,7 +49,7 @@ const value = computed({
 });
 
 const onSubmit = handleSubmit((formValues) => {
-    emit('submit', formValues.value || '', 'date');
+    emits('submit', { value: formValues.value, type: 'date'});
 });
 
 </script>
@@ -91,7 +91,7 @@ const onSubmit = handleSubmit((formValues) => {
                 <FormMessage />
             </FormItem>
         </FormField>
-        <slot name="actions" :submit="onSubmit" />
+        <slot name="actions" />
     </form>
 </template>
 

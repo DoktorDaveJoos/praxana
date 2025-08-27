@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\ResponseType;
+use App\QuestionType;
 use Database\Factories\ResponseFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -10,24 +10,36 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
+ * 
+ *
  * @property string $id
  * @property string $survey_run_id
  * @property string|null $step_id
  * @property string|null $choice_id
  * @property string $value
- *
- * @property ResponseType $type
+ * @property QuestionType $type
  * @property-read Choice|null $choice
  * @property-read Step|null $step
  * @property-read SurveyRun|null $surveyRun
- *
  * @method static ResponseFactory factory($count = null, $state = [])
  * @method static Builder<static>|Response newModelQuery()
  * @method static Builder<static>|Response newQuery()
  * @method static Builder<static>|Response query()
- *
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static Builder<static>|Response whereChoiceId($value)
+ * @method static Builder<static>|Response whereCreatedAt($value)
+ * @method static Builder<static>|Response whereId($value)
+ * @method static Builder<static>|Response whereStepId($value)
+ * @method static Builder<static>|Response whereSurveyRunId($value)
+ * @method static Builder<static>|Response whereType($value)
+ * @method static Builder<static>|Response whereUpdatedAt($value)
+ * @method static Builder<static>|Response whereValue($value)
+ * @property int $is_skipped
+ * @method static Builder<static>|Response whereIsSkipped($value)
  * @mixin Eloquent
  */
 class Response extends Model
@@ -44,7 +56,8 @@ class Response extends Model
     ];
 
     protected $casts = [
-        'type' => ResponseType::class,
+        'type' => QuestionType::class,
+        'value' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

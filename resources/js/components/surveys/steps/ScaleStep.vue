@@ -5,14 +5,14 @@ import * as z from 'zod';
 
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Slider } from '@/components/ui/slider';
-import { Step } from '@/types';
+import { Step, StepResponse } from '@/types';
 
-defineProps<{
+const props = defineProps<{
     step: Step;
 }>();
 
 const emit = defineEmits<{
-    (e: 'submit', value: string, type: string): void;
+    (e: 'submit', data: StepResponse): void;
 }>();
 
 const formSchema = toTypedSchema(
@@ -24,12 +24,12 @@ const formSchema = toTypedSchema(
 const { handleSubmit } = useForm({
     validationSchema: formSchema,
     initialValues: {
-        scale: [0],
+        scale: props.step.response?.value ? [parseInt(props.step.response?.value)] : [0],
     },
 });
 
 const onSubmit = handleSubmit((values) => {
-    emit('submit', JSON.stringify(values.scale), 'scale');
+    emit('submit', { value: JSON.stringify(values.scale[0]), type: 'scale' });
 });
 </script>
 
@@ -51,7 +51,7 @@ const onSubmit = handleSubmit((values) => {
                 <FormMessage />
             </FormItem>
         </FormField>
-        <slot name="actions" :submit="onSubmit" />
+        <slot name="actions"/>
     </form>
 </template>
 

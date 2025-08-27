@@ -13,14 +13,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class StepFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        $stepType = $this->faker->randomElement(StepType::cases());
+        $stepType = $this->faker->boolean(80) ? StepType::Question : StepType::Dialog;
 
         return match ($stepType) {
             StepType::Question => [
@@ -28,6 +23,9 @@ class StepFactory extends Factory
                 'content' => $this->faker->paragraph(),
                 'step_type' => $stepType,
                 'question_type' => $this->faker->randomElement(QuestionType::cases()),
+                'options' => [
+                    'optional' => $this->faker->boolean(),
+                ],
             ],
             StepType::Dialog => [
                 'title' => $this->faker->sentence(),
@@ -36,5 +34,22 @@ class StepFactory extends Factory
                 'question_type' => null,
             ],
         };
+    }
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Step $step) {
+            // Only create choices for question steps of type single/multiple choice
+            if (
+                $step->step_type === StepType::Question &&
+                in_array($step->question_type, [QuestionType::SingleChoice, QuestionType::MultipleChoice], true)
+            ) {
+                // create 2–6 choices and attach to the step
+                Choice::factory()
+                    ->count(fake()->numberBetween(2, 6))
+                    ->for($step)        // sets step_id
+                    ->create();
+            }
+        });
     }
 }

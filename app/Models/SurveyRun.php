@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
+ * 
+ *
  * @property int $id
  * @property int $survey_id
  * @property string $patient_hash
@@ -23,18 +25,27 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $finished_at
  * @property int|null $current_step_id
  * @property string $ai_analysis
- *
  * @property SurveyRunStatus $status
  * @property-read Collection<int, Response> $responses
  * @property-read int|null $responses_count
  * @property-read Step|null $step
  * @property-read Survey|null $survey
- *
  * @method static SurveyRunFactory factory($count = null, $state = [])
  * @method static Builder<static>|SurveyRun newModelQuery()
  * @method static Builder<static>|SurveyRun newQuery()
  * @method static Builder<static>|SurveyRun query()
- *
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static Builder<static>|SurveyRun whereAiAnalysis($value)
+ * @method static Builder<static>|SurveyRun whereCreatedAt($value)
+ * @method static Builder<static>|SurveyRun whereCurrentStepId($value)
+ * @method static Builder<static>|SurveyRun whereFinishedAt($value)
+ * @method static Builder<static>|SurveyRun whereId($value)
+ * @method static Builder<static>|SurveyRun wherePatientHash($value)
+ * @method static Builder<static>|SurveyRun whereStartedAt($value)
+ * @method static Builder<static>|SurveyRun whereStatus($value)
+ * @method static Builder<static>|SurveyRun whereSurveyId($value)
+ * @method static Builder<static>|SurveyRun whereUpdatedAt($value)
  * @mixin Eloquent
  */
 class SurveyRun extends Model
