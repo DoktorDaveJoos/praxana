@@ -82,7 +82,7 @@ const infoText = computed(() => {
                         <AlertTitle>KI Analyse</AlertTitle>
                         <AlertDescription>
                             <Separator class="my-2" />
-                            <AlertMarkdownContent :content="surveyRun.data.ai_analysis" />
+                            <AlertMarkdownContent :content="JSON.parse(surveyRun.data.ai_analysis)?.summary" />
                         </AlertDescription>
                     </Alert>
 

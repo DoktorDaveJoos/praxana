@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $survey_id
@@ -82,5 +82,52 @@ class SurveyRun extends Model
     public function responses(): HasMany
     {
         return $this->hasMany(Response::class);
+    }
+
+    /**
+     * Build the FULL PubMed prompt in one go.
+     */
+    public function pubmedPrompt(): string
+    {
+        $surveyName = $this->survey?->name ?? 'Survey';
+        $surveyDesc = trim((string)$this->survey?->description);
+
+        $prompt = "Based on the following patient survey responses, generate a focused PubMed search query that will find relevant medical literature:\n\n";
+        $prompt .= "Survey: {$surveyName}\n";
+        if ($surveyDesc !== '') {
+            $prompt .= "Description: {$surveyDesc}\n";
+        }
+        $prompt .= "\nPatient Responses:\n";
+
+        $i = 1;
+        foreach ($this->responses as $response) {
+            if (!$response->step) {
+                continue;
+            }
+
+            // inside foreach ($this->responses as $response)
+            $q      = $response->step->title ?? 'Untitled question';
+            $c      = trim(($response->step->content ?? ''));
+            $answer = $response->answerText(); // <<— fix: always a string now
+
+            $prompt .= "{$i}. Question: {$q}\n";
+            if ($c !== '') {
+                $prompt .= "   Context: {$c}\n";
+            }
+            $prompt .= "   Answer: {$answer}\n\n";
+
+            $prompt .= "\n";
+            $i++;
+        }
+
+        $prompt .= "Please generate a PubMed search query that:\n";
+        $prompt .= "1. Uses appropriate medical terminology and MeSH terms\n";
+        $prompt .= "2. Combines relevant keywords with Boolean operators (AND, OR, NOT)\n";
+        $prompt .= "3. Focuses on the most significant medical conditions or symptoms mentioned\n";
+        $prompt .= "4. Is specific enough to return relevant results but not too narrow\n";
+        $prompt .= "5. Follows PubMed search syntax best practices\n\n";
+        $prompt .= "Return only the search query without any additional explanation or formatting.";
+
+        return $prompt;
     }
 }
