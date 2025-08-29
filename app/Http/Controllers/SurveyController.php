@@ -7,9 +7,12 @@ use App\Http\Requests\UpdateSurveyRequest;
 use App\Http\Resources\SurveyResource;
 use App\Models\Practice;
 use App\Models\Survey;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class SurveyController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
@@ -25,9 +28,11 @@ class SurveyController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Practice $practice)
     {
-        //
+        $this->authorize('create', [Survey::class, $practice]);
+
+        return inertia('surveys/Create');
     }
 
     /**

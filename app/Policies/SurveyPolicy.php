@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Practice;
 use App\Models\Survey;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -27,9 +28,9 @@ class SurveyPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Practice $practice): bool
     {
-        return false;
+        return $user->practice_id === $practice->id;
     }
 
     /**

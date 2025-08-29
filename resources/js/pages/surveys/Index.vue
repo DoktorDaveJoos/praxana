@@ -2,11 +2,19 @@
 import DataTable from '@/components/DataTable.vue';
 import Heading from '@/components/Heading.vue';
 import { selectSurveyColumns } from '@/components/surveys/selectSurveyColumns';
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem, Survey, ResourceCollection, SharedData } from '@/types';
-import { Head, usePage } from '@inertiajs/vue3';
-import { Button } from '@/components/ui/button';
+import { type BreadcrumbItem, ResourceCollection, SharedData, Survey } from '@/types';
+import { Head, router, usePage } from '@inertiajs/vue3';
 
 defineProps<{
     surveys: ResourceCollection<Survey>;
@@ -22,6 +30,20 @@ const breadcrumbItems: BreadcrumbItem[] = [
         }),
     },
 ];
+
+const handleClick = (type: string) => {
+    switch (type) {
+        case 'yaml':
+            router.visit(
+                route('practices.surveys.create', {
+                    practice: usePage<SharedData>().props.auth.practice.id,
+                }),
+            );
+            break;
+        default:
+            throw new Error('Unknown type');
+    }
+};
 </script>
 
 <template>
@@ -30,8 +52,18 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
         <div class="px-4 py-6">
             <div class="flex justify-between">
-            <Heading title="Fragebögen" description="Übersicht und Verwaltung der Fragebögen." />
-                <Button type="button">Hinzufügen</Button>
+                <Heading title="Fragebögen" description="Übersicht und Verwaltung der Fragebögen." />
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <Button>Hinzufügen</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>Optionen</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem @click="handleClick('yaml')">YAML Editor</DropdownMenuItem>
+                        <DropdownMenuItem disabled>JSON Editor</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             <div class="container mx-auto">

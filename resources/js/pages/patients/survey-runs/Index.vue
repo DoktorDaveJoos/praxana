@@ -90,7 +90,7 @@ const onSubmit = handleSubmit((values) => {
     );
 });
 
-const selectableSurveyColumns = selectSurveyColumns({ withSelection: true });
+const selectableSurveyColumns = selectSurveyColumns({ withSelection: true, withDescription: false });
 </script>
 
 <template>
@@ -123,8 +123,8 @@ const selectableSurveyColumns = selectSurveyColumns({ withSelection: true });
                                                         @update:selectedRows="(selected) => handleChange(selected.map((survey) => survey.id))"
                                                     />
                                                 </FormControl>
-                                            </FormItem>
                                             <FormMessage />
+                                            </FormItem>
                                         </FormField>
                                         <FormField v-if="patient.data.email" v-slot="{ value, handleChange }" type="checkbox" name="send">
                                             <FormItem class="flex flex-row items-start space-y-0 gap-x-3 rounded-md border p-4 shadow">

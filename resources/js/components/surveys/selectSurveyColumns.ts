@@ -1,11 +1,11 @@
+import DataTableDropdown from '@/components/surveys/DataTableDropdown.vue';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Survey } from '@/types';
 import { ColumnDef } from '@tanstack/vue-table';
 import { h } from 'vue';
-import DataTableDropdown from '@/components/surveys/DataTableDropdown.vue';
 
-export function selectSurveyColumns(options?: { withSelection?: boolean }): ColumnDef<Survey>[] {
-    const { withSelection = true } = options ?? {};
+export function selectSurveyColumns(options?: { withSelection?: boolean; withDescription?: boolean }): ColumnDef<Survey>[] {
+    const { withSelection = true, withDescription = true } = options ?? {};
 
     const columns: ColumnDef<Survey>[] = [];
 
@@ -29,19 +29,23 @@ export function selectSurveyColumns(options?: { withSelection?: boolean }): Colu
         });
     }
 
-    columns.push(
-        {
-            accessorKey: 'name',
-            enableHiding: false,
-            header: () => h('div', { class: 'text-left' }, 'Name'),
-            cell: ({ row }) => h('div', { class: 'text-left text-primary font-medium' }, row.getValue('name')),
-        },
-        {
+    columns.push({
+        accessorKey: 'name',
+        enableHiding: false,
+        header: () => h('div', { class: 'text-left' }, 'Name'),
+        cell: ({ row }) => h('div', { class: 'text-left text-primary font-medium' }, row.getValue('name')),
+    });
+
+    if (withDescription) {
+        columns.push({
             accessorKey: 'description',
             enableHiding: false,
             header: () => h('div', { class: 'text-left' }, 'Beschreibung'),
-            cell: ({ row }) => h('div', { class: 'text-left text-primary' }, row.getValue('descriptiom') ?? '-'),
-        },
+            cell: ({ row }) => h('div', { class: 'text-left text-primary max-w-64 truncate' }, row.getValue('description') ?? '-'),
+        });
+    }
+
+    columns.push(
         {
             // @todo adapt size of column regarding display size
             accessorKey: 'id',
@@ -53,8 +57,7 @@ export function selectSurveyColumns(options?: { withSelection?: boolean }): Colu
                     h(
                         'code',
                         {
-                            class:
-                                'relative truncate block rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-xs',
+                            class: 'relative truncate block rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-xs',
                         },
                         row.getValue('id'),
                     ),
