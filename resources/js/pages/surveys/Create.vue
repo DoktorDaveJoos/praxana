@@ -13,46 +13,23 @@ const breadcrumbItems: BreadcrumbItem[] = [
             practice: usePage<SharedData>().props.auth.practice.id,
         }),
     },
+    {
+        title: 'Erstellen',
+        href: route('practices.surveys.create', {
+            practice: usePage<SharedData>().props.auth.practice.id,
+        }),
+    },
 ];
 
 // bind object
 const state = useStorage(`${usePage<SharedData>().props.auth.practice.id}-yaml-create`, '', localStorage);
-
-// default: comment-style guidance + minimal JSON skeleton
-if (!state.value) {
-    state.value = `// JSON Fragebogen Template
-// ----------------------
-// • Ersetze <PLATZHALTER> durch deine Werte
-// • "steps" ist ein Array von Schritten (z. B. Fragen)
-// • Unterstützte Eingabetypen: "text", "number", "select", ...
-// • Siehe Dokumentation: https://laravel.com/docs/starter-kits#vue
-
-{
-  "type": "survey",
-  "version": 1,
-  "name": "<NAME>",
-  "description": "Kurze Beschreibung des Fragebogens.",
-  "steps": [
-    {
-      "type": "question",
-      "title": "Wie heißt du?",
-      "input": {
-        "type": "text",
-        "required": true,
-        "placeholder": "Dein Name"
-      }
-    }
-  ]
-}
-`;
-}
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
         <Head title="Fragebögen" />
         <div class="p-6">
-            <TipTapEditor v-model="state" />
+<!--            <TipTapEditor v-model="state" />-->
             <CodeMirrorEditor v-model="state" />
         </div>
     </AppLayout>

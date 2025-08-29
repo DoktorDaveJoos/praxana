@@ -33,7 +33,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
 const handleClick = (type: string) => {
     switch (type) {
-        case 'yaml':
+        case 'json':
             router.visit(
                 route('practices.surveys.create', {
                     practice: usePage<SharedData>().props.auth.practice.id,
@@ -60,8 +60,8 @@ const handleClick = (type: string) => {
                     <DropdownMenuContent>
                         <DropdownMenuLabel>Optionen</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem @click="handleClick('yaml')">YAML Editor</DropdownMenuItem>
-                        <DropdownMenuItem disabled>JSON Editor</DropdownMenuItem>
+                        <DropdownMenuItem @click="handleClick('json')">JSON Editor</DropdownMenuItem>
+                        <DropdownMenuItem disabled>GUI Editor</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
