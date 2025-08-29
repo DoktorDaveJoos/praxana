@@ -20,6 +20,7 @@ import { computed, HTMLAttributes, onMounted, ref, watch } from 'vue';
 import { ListChecks, Trash, WrapText, AlertCircle, Bone, Copy, CopyCheck } from 'lucide-vue-next';
 import Heading from '@/components/Heading.vue';
 import { useClipboard } from '@vueuse/core'
+import { createSurveySchemaLinter } from "@/lib/codemirror-survey-schema-linter";
 
 const props = defineProps<{
     class?: HTMLAttributes['class'];
@@ -157,6 +158,7 @@ onMounted(() => {
             closeBrackets(),
             autocompletion(),
             lineNumbers(),
+            createSurveySchemaLinter(),
             syntaxHighlighting(defaultHighlightStyle),
             keymap.of([...defaultKeymap, ...historyKeymap, ...closeBracketsKeymap, ...completionKeymap, indentWithTab]),
             language,
