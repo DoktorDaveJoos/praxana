@@ -36,15 +36,16 @@ const { copy, copied } = useClipboard()
 
 const example = {
     "survey": {
-        "name": "Anamnese – Check-up",
+        "name": "Medizinischer Check-up – Anamnese",
         "description": "Kurze medizinische Anamnese vor dem Termin.",
         "version": 1,
+        "is_active": true,
         "steps": [
             {
                 "order": 1,
                 "title": "Willkommen",
-                "content": "Diese kurze Anamnese hilft uns, Ihren Gesundheitszustand besser einzuschätzen. Bitte beantworten Sie die folgenden Fragen ehrlich. Ihre Angaben bleiben vertraulich.",
-                "step_type": "dialog",
+                "content": "Diese kurze Anamnese hilft uns, Ihren Gesundheitszustand besser einzuschätzen. Bitte beantworten Sie die Fragen ehrlich. Ihre Angaben bleiben vertraulich.",
+                "step_type": "info"
             },
             {
                 "order": 2,
@@ -52,12 +53,17 @@ const example = {
                 "content": "Haben Sie derzeit Beschwerden? (Mehrfachauswahl möglich)",
                 "step_type": "question",
                 "question_type": "multiple_choice",
+                "options": {
+                    "min_choices": 1,
+                    "max_choices": 5,
+                    "optional": false
+                },
                 "choices": [
-                    { "label": "Keine Beschwerden", "value": "none", "optional_next_step": 4, "order": 1 },
-                    { "label": "Schmerzen", "value": "pain", "optional_next_step": null, "order": 2 },
-                    { "label": "Fieber", "value": "fever", "optional_next_step": null, "order": 3 },
-                    { "label": "Husten", "value": "cough", "optional_next_step": null, "order": 4 },
-                    { "label": "Atemnot", "value": "dyspnea", "optional_next_step": null, "order": 5 }
+                    { "label": "Keine Beschwerden", "value": "none", "next_step": 4, "order": 1 },
+                    { "label": "Schmerzen", "value": "pain", "next_step": null, "order": 2 },
+                    { "label": "Fieber", "value": "fever", "next_step": null, "order": 3 },
+                    { "label": "Husten", "value": "cough", "next_step": null, "order": 4 },
+                    { "label": "Atemnot", "value": "dyspnea", "next_step": null, "order": 5 }
                 ]
             },
             {
@@ -75,14 +81,26 @@ const example = {
             {
                 "order": 4,
                 "title": "Letzte Vorsorgeuntersuchung",
-                "content": "Wann war Ihre letzte Vorsorge- bzw. Gesundheitsuntersuchung?",
+                "content": "Wann war Ihre letzte Vorsorge- oder Gesundheitsuntersuchung?",
                 "step_type": "question",
                 "question_type": "date",
                 "options": {
                     "min": "1900-01-01",
                     "max": "today",
+                    "format": "YYYY-MM-DD",
                     "optional": true
                 }
+            },
+            {
+                "order": 5,
+                "title": "Kennen wir uns?",
+                "content": "Waren Sie bereits bei uns?",
+                "step_type": "question",
+                "question_type": "single_choice",
+                "choices": [
+                    { "label": "Ja", "value": "true", "order": 1 },
+                    { "label": "Nein", "value": "false", "order": 2 }
+                ]
             }
         ]
     }

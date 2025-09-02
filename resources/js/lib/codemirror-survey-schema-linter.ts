@@ -4,189 +4,192 @@
 // Optional (typings):
 //   npm i -D @types/json-source-map
 
-import type { Extension } from "@codemirror/state";
-import { linter, type Diagnostic } from "@codemirror/lint";
-import type { EditorView } from "@codemirror/view";
-import Ajv2020, { type ErrorObject, type ValidateFunction } from "ajv/dist/2020";
-import addFormats from "ajv-formats"; // to support a date format in options_date
-import { parse as parseWithPointers } from "json-source-map";
+import { linter, type Diagnostic } from '@codemirror/lint';
+import type { Extension } from '@codemirror/state';
+import type { EditorView } from '@codemirror/view';
+import addFormats from 'ajv-formats'; // to support a date format in options_date
+import Ajv2020, { type ErrorObject, type ValidateFunction } from 'ajv/dist/2020';
+import { parse as parseWithPointers } from 'json-source-map';
 
 /** The Survey JSON Schema (Draft 2020-12) */
 export const surveySchema = {
-    $schema: "https://json-schema.org/draft/2020-12/schema",
-    $id: "https://example.com/survey.schema.json",
-    title: "Survey Payload",
-    type: "object",
+    $schema: 'https://json-schema.org/draft/2020-12/schema',
+    $id: 'https://example.com/survey.schema.json',
+    title: 'Survey Payload',
+    type: 'object',
     additionalProperties: false,
-    required: ["survey"],
+    required: ['survey'],
     properties: {
         survey: {
-            type: "object",
+            type: 'object',
             additionalProperties: false,
-            required: ["name", "version", "steps"],
+            required: ['name', 'version', 'steps'],
             properties: {
-                name: { type: "string", minLength: 1 },
-                description: { type: ["string", "null"] },
-                version: { type: "integer", minimum: 1, default: 1 },
-                is_active: { type: "boolean", default: true },
+                name: { type: 'string', minLength: 1 },
+                description: { type: ['string', 'null'] },
+                version: { type: 'integer', minimum: 1, default: 1 },
+                is_active: { type: 'boolean', default: true },
                 steps: {
-                    type: "array",
+                    type: 'array',
                     minItems: 1,
-                    items: { $ref: "#/$defs/step" },
+                    items: { $ref: '#/$defs/step' },
                 },
             },
         },
     },
     $defs: {
         step: {
-            type: "object",
+            type: 'object',
             additionalProperties: false,
-            required: ["order", "step_type"],
+            required: ['order', 'step_type'],
             properties: {
-                order: { type: "integer", minimum: 1 },
-                title: { type: ["string", "null"] },
-                content: { type: ["string", "null"] },
-                step_type: { type: "string", enum: ["dialog", "question"] },
+                order: { type: 'integer', minimum: 1 },
+                title: { type: ['string', 'null'] },
+                content: { type: ['string', 'null'] },
+
+                step_type: { type: 'string', enum: ['info', 'question'] },
+
                 question_type: {
-                    type: ["string", "null"],
-                    enum: ["single_choice", "multiple_choice", "text", "number", "date", null],
+                    type: ['string', 'null'],
+                    enum: ['single_choice', 'multiple_choice', 'text', 'number', 'date', null],
                 },
+
                 options: {
-                    oneOf: [
-                        { type: "null" },
-                        { type: "object" },
-                    ],
+                    oneOf: [{ type: 'null' }, { type: 'object' }],
+                    description: 'Optional per-question settings; validated by question_type when present.',
                 },
-                choices: { $ref: "#/$defs/choicesArray" },
+
+                choices: { $ref: '#/$defs/choicesArray' },
             },
+
             allOf: [
                 {
-                    if: { properties: { step_type: { const: "question" } } },
+                    if: { properties: { step_type: { const: 'question' } } },
                     then: {
-                        required: ["question_type"],
+                        required: ['question_type'],
                         allOf: [
                             {
                                 if: {
                                     properties: {
-                                        question_type: { enum: ["single_choice", "multiple_choice"] },
+                                        question_type: { enum: ['single_choice', 'multiple_choice'] },
                                     },
                                 },
                                 then: {
-                                    required: ["options", "choices"],
+                                    required: ['choices'],
                                     properties: {
-                                        options: { $ref: "#/$defs/options_choice" },
-                                        choices: { $ref: "#/$defs/choicesArray" },
+                                        options: { $ref: '#/$defs/options_choice' },
+                                        choices: { $ref: '#/$defs/choicesArray' },
                                     },
                                 },
                             },
                             {
-                                if: { properties: { question_type: { const: "text" } } },
+                                if: { properties: { question_type: { const: 'text' } } },
                                 then: {
-                                    required: ["options"],
-                                    properties: { options: { $ref: "#/$defs/options_text" }, choices: false },
+                                    not: { required: ['choices'] },
+                                    properties: {
+                                        options: { $ref: '#/$defs/options_text' },
+                                        choices: false,
+                                    },
                                 },
                             },
                             {
-                                if: { properties: { question_type: { const: "number" } } },
+                                if: { properties: { question_type: { const: 'number' } } },
                                 then: {
-                                    required: ["options"],
-                                    properties: { options: { $ref: "#/$defs/options_number" }, choices: false },
+                                    not: { required: ['choices'] },
+                                    properties: {
+                                        options: { $ref: '#/$defs/options_number' },
+                                        choices: false,
+                                    },
                                 },
                             },
                             {
-                                if: { properties: { question_type: { const: "date" } } },
+                                if: { properties: { question_type: { const: 'date' } } },
                                 then: {
-                                    required: ["options"],
-                                    properties: { options: { $ref: "#/$defs/options_date" }, choices: false },
+                                    not: { required: ['choices'] },
+                                    properties: {
+                                        options: { $ref: '#/$defs/options_date' },
+                                        choices: false,
+                                    },
                                 },
                             },
                         ],
                     },
                     else: {
-                        not: { required: ["choices"] },
                         properties: {
-                            question_type: { type: ["null"] },
-                            options: { type: ["null"] },
+                            question_type: { type: ['null'] },
+                            options: { type: ['null'] },
+                            choices: { type: ['null'] },
                         },
                     },
                 },
             ],
         },
+
         choicesArray: {
-            type: "array",
+            type: 'array',
             minItems: 1,
-            items: { $ref: "#/$defs/choice" },
+            items: { $ref: '#/$defs/choice' },
         },
+
         choice: {
-            type: "object",
+            type: 'object',
             additionalProperties: false,
-            required: ["label", "value"],
+            required: ['label', 'value'],
             properties: {
-                label: { type: "string", minLength: 1 },
-                value: { type: "string", minLength: 1 },
-                optional_next_step: { type: ["integer", "null"], minimum: 1 },
-                order: { type: ["integer", "null"], minimum: 1 },
+                label: { type: 'string', minLength: 1 },
+                value: { type: 'string', minLength: 1 },
+                next_step: { type: ['integer', 'null'], minimum: 1 },
+                order: { type: ['integer', 'null'], minimum: 1 },
             },
         },
+
         options_choice: {
-            type: "object",
+            type: 'object',
             additionalProperties: false,
-            required: ["optional"],
             properties: {
-                min_choices: { type: "integer", minimum: 0 },
-                max_choices: { type: "integer", minimum: 1 },
-                allow_other: { type: "boolean", default: false },
-                other_label: { type: ["string", "null"] },
-                optional: { type: "boolean", default: false },
+                min_choices: { type: ['integer', 'null'], minimum: 0 },
+                max_choices: { type: ['integer', 'null'], minimum: 1 },
+                allow_other: { type: 'boolean', default: false },
+                other_label: { type: ['string', 'null'] },
+                optional: { type: 'boolean', default: false },
             },
             description:
-                "For single_choice/multiple_choice. (Note: schema cannot enforce min_choices ≤ max_choices without $data extensions.)",
+                'Optional settings for single_choice/multiple_choice. (Note: JSON Schema cannot enforce min_choices ≤ max_choices without $data extensions.)',
         },
+
         options_text: {
-            type: "object",
+            type: 'object',
             additionalProperties: false,
-            required: ["optional"],
             properties: {
-                placeholder: { type: ["string", "null"] },
-                max_length: { type: ["integer", "null"], minimum: 1 },
-                optional: { type: "boolean", default: false },
+                placeholder: { type: ['string', 'null'] },
+                max_length: { type: ['integer', 'null'], minimum: 1 },
+                optional: { type: 'boolean', default: false },
             },
         },
+
         options_number: {
-            type: "object",
+            type: 'object',
             additionalProperties: false,
-            required: ["optional"],
             properties: {
-                min: { type: ["number", "null"] },
-                max: { type: ["number", "null"] },
-                step: { type: ["number", "null"] },
-                optional: { type: "boolean", default: false },
+                min: { type: ['number', 'null'] },
+                max: { type: ['number', 'null'] },
+                step: { type: ['number', 'null'] },
+                optional: { type: 'boolean', default: false },
             },
         },
+
         options_date: {
-            type: "object",
+            type: 'object',
             additionalProperties: false,
-            required: ["optional"],
             properties: {
                 min: {
-                    oneOf: [
-                        { type: "string", format: "date" },
-                        { const: "today" },
-                        { type: "null" },
-                    ],
+                    oneOf: [{ type: 'string', format: 'date' }, { const: 'today' }, { type: 'null' }],
                 },
                 max: {
-                    oneOf: [
-                        { type: "string", format: "date" },
-                        { const: "today" },
-                        { type: "null" },
-                    ],
+                    oneOf: [{ type: 'string', format: 'date' }, { const: 'today' }, { type: 'null' }],
                 },
-                format: {
-                    type: ["string", "null"],
-                    enum: ["YYYY-MM-DD", null],
-                },
-                optional: { type: "boolean", default: false },
+                format: { type: ['string', 'null'], enum: ['YYYY-MM-DD', null] },
+                optional: { type: 'boolean', default: false },
             },
         },
     },
@@ -212,15 +215,15 @@ export function createSurveySchemaLinter(): Extension {
         const info = pointers[ptr];
         if (info?.value) {
             const from = info.value.pos;
-            const to = typeof info.valueEnd?.pos === "number" ? info.valueEnd.pos : info.value.pos + 1;
+            const to = typeof info.valueEnd?.pos === 'number' ? info.valueEnd.pos : info.value.pos + 1;
             return { from, to };
         }
         // Try parent key when the exact value node is missing
-        const parent = ptr.replace(/\/(?:[^/]+)$/u, "");
+        const parent = ptr.replace(/\/(?:[^/]+)$/u, '');
         const parentInfo = pointers[parent];
         if (parentInfo?.key) {
             const from = parentInfo.key.pos;
-            const to = typeof parentInfo.keyEnd?.pos === "number" ? parentInfo.keyEnd.pos : from + 1;
+            const to = typeof parentInfo.keyEnd?.pos === 'number' ? parentInfo.keyEnd.pos : from + 1;
             return { from, to };
         }
         return { from: 0, to: Math.max(0, Math.min(docLength, 1)) };
@@ -229,20 +232,20 @@ export function createSurveySchemaLinter(): Extension {
     // Extra rule: ensure min_choices ≤ max_choices in choice options
     function extraChoiceBoundsDiagnostics(data: any, pointers: any): Diagnostic[] {
         const diags: Diagnostic[] = [];
-        if (!data || typeof data !== "object") return diags;
+        if (!data || typeof data !== 'object') return diags;
         const steps = data?.survey?.steps;
         if (!Array.isArray(steps)) return diags;
         steps.forEach((step: any, idx: number) => {
             const ptrBase = `/survey/steps/${idx}/options`;
             const opts = step?.options;
-            if (!opts || typeof opts !== "object") return;
-            if (typeof opts.min_choices === "number" && typeof opts.max_choices === "number") {
+            if (!opts || typeof opts !== 'object') return;
+            if (typeof opts.min_choices === 'number' && typeof opts.max_choices === 'number') {
                 if (opts.min_choices > opts.max_choices) {
                     const { from, to } = rangeForPointer(pointers, ptrBase, Infinity);
                     diags.push({
                         from,
                         to,
-                        severity: "error",
+                        severity: 'error',
                         message: `min_choices (${opts.min_choices}) cannot be greater than max_choices (${opts.max_choices}).`,
                     });
                 }
@@ -251,48 +254,51 @@ export function createSurveySchemaLinter(): Extension {
         return diags;
     }
 
-    return linter((view: EditorView) => {
-        const text = view.state.doc.toString();
+    return linter(
+        (view: EditorView) => {
+            const text = view.state.doc.toString();
 
-        // Quick exit: if not valid JSON, let the JSON language/syntax linter surface errors.
-        // We still try to parse via json-source-map which is forgiving about mapping positions.
-        let data: any = null;
-        let pointers: Record<string, any> = {};
-        try {
-            const res = parseWithPointers(text);
-            data = res.data;
-            pointers = res.pointers as any;
-        } catch {
-            return [];
-        }
-
-        const diagnostics: Diagnostic[] = [];
-
-        const ok = validate(data);
-        if (!ok && validate.errors) {
-            for (const err of validate.errors as ErrorObject[]) {
-                // Ajv uses instancePath (leading '/') for the failing location. Root is ''
-                const ptr = err.instancePath || "";
-                const { from, to } = rangeForPointer(pointers, ptr, text.length);
-                const msg = formatAjvError(err);
-                diagnostics.push({ from, to, severity: "error", message: msg });
+            // Quick exit: if not valid JSON, let the JSON language/syntax linter surface errors.
+            // We still try to parse via json-source-map which is forgiving about mapping positions.
+            let data: any = null;
+            let pointers: Record<string, any> = {};
+            try {
+                const res = parseWithPointers(text);
+                data = res.data;
+                pointers = res.pointers as any;
+            } catch {
+                return [];
             }
-        }
 
-        // Extra semantic checks not covered by schema
-        diagnostics.push(...extraChoiceBoundsDiagnostics(data, pointers));
+            const diagnostics: Diagnostic[] = [];
 
-        return diagnostics;
-    }, { needsRefresh: (update) => update.docChanged });
+            const ok = validate(data);
+            if (!ok && validate.errors) {
+                for (const err of validate.errors as ErrorObject[]) {
+                    // Ajv uses instancePath (leading '/') for the failing location. Root is ''
+                    const ptr = err.instancePath || '';
+                    const { from, to } = rangeForPointer(pointers, ptr, text.length);
+                    const msg = formatAjvError(err);
+                    diagnostics.push({ from, to, severity: 'error', message: msg });
+                }
+            }
+
+            // Extra semantic checks not covered by schema
+            diagnostics.push(...extraChoiceBoundsDiagnostics(data, pointers));
+
+            return diagnostics;
+        },
+        { needsRefresh: (update) => update.docChanged },
+    );
 }
 
 function formatAjvError(e: ErrorObject): string {
     // Build a compact human-readable message
     // Example: "survey.steps[0].options.required: must have required property 'optional'"
-    const path = e.instancePath ? pointerToReadable(e.instancePath) : "<root>";
-    const base = e.message || "schema violation";
-    if (e.keyword === "enum" && Array.isArray((e.params as any).allowedValues)) {
-        return `${path}: must be one of ${(e.params as any).allowedValues.map(String).join(", ")}`;
+    const path = e.instancePath ? pointerToReadable(e.instancePath) : '<root>';
+    const base = e.message || 'schema violation';
+    if (e.keyword === 'enum' && Array.isArray((e.params as any).allowedValues)) {
+        return `${path}: must be one of ${(e.params as any).allowedValues.map(String).join(', ')}`;
     }
     if ((e as any).params?.missingProperty) {
         return `${path}: missing required property '${(e as any).params.missingProperty}'`;
@@ -301,13 +307,16 @@ function formatAjvError(e: ErrorObject): string {
 }
 
 function pointerToReadable(ptr: string): string {
-    if (!ptr) return "<root>";
+    if (!ptr) return '<root>';
     // Convert JSON Pointer to a friendlier dot/bracket path
-    const parts = ptr.split("/").slice(1).map(u => u.replace(/~1/g, "/").replace(/~0/g, "~"));
+    const parts = ptr
+        .split('/')
+        .slice(1)
+        .map((u) => u.replace(/~1/g, '/').replace(/~0/g, '~'));
     return parts
-        .map(p => (String(+p) === p ? `[${p}]` : (p.match(/^[A-Za-z_][A-Za-z0-9_]*$/) ? `.${p}` : `[\"${p}\"]`)))
-        .join("")
-        .replace(/^\./, "");
+        .map((p) => (String(+p) === p ? `[${p}]` : p.match(/^[A-Za-z_][A-Za-z0-9_]*$/) ? `.${p}` : `[\"${p}\"]`))
+        .join('')
+        .replace(/^\./, '');
 }
 
 /**
