@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { json } from '@codemirror/lang-json';
 import { javascript } from '@codemirror/lang-javascript';
@@ -17,10 +18,16 @@ import { indentOnInput, bracketMatching, syntaxHighlighting, defaultHighlightSty
 import { history, defaultKeymap, historyKeymap, indentWithTab } from '@codemirror/commands';
 import { closeBrackets, closeBracketsKeymap, autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { computed, HTMLAttributes, onMounted, ref, watch } from 'vue';
-import { ListChecks, Trash, WrapText, AlertCircle, Bone, Copy, CopyCheck } from 'lucide-vue-next';
+import { ListChecks, Trash, WrapText, AlertCircle, Bone, Copy, CopyCheck, Check, CircleX } from 'lucide-vue-next';
 import Heading from '@/components/Heading.vue';
 import { useClipboard } from '@vueuse/core'
 import { createSurveySchemaLinter } from "@/lib/codemirror-survey-schema-linter";
+import { useSurveySchemaValidity } from '@/composables/useSurveySchemaValidity';
+
+const { isValid, errors, extension: validityExtension, validateNow } = useSurveySchemaValidity({
+    collectErrors: true,
+    debounceMs: 80,
+});
 
 const props = defineProps<{
     class?: HTMLAttributes['class'];
@@ -31,7 +38,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{ 'update:modelValue': [value?: string] }>();
-const errors = ref<string[]>([]);
 const { copy, copied } = useClipboard()
 
 const example = {
@@ -181,12 +187,15 @@ onMounted(() => {
             keymap.of([...defaultKeymap, ...historyKeymap, ...closeBracketsKeymap, ...completionKeymap, indentWithTab]),
             language,
             cmTheme,
+            validityExtension,
             EditorView.lineWrapping,
             EditorView.updateListener.of((v) => {
                 if (v.docChanged) emit('update:modelValue', v.state.doc.toString());
             }),
         ],
     });
+
+    validateNow(initial.value);
 });
 
 // keep external v-model in sync
@@ -223,16 +232,20 @@ const toClipboard = () => {
 </script>
 
 <template>
-    <Alert v-if="errors.length" variant="destructive" class="mb-4">
-        <AlertCircle class="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{{ errors.join(', ') }}</AlertDescription>
-    </Alert>
+<!--    <Alert v-if="errors.length" variant="destructive" class="mb-4">-->
+<!--        <AlertCircle class="h-4 w-4" />-->
+<!--        <AlertTitle>Error</AlertTitle>-->
+<!--        <AlertDescription>{{ errors.join(', ') }}</AlertDescription>-->
+<!--    </Alert>-->
 
-    <div class="mb-2 flex justify-between">
+    <div class="mb-2 flex flex-col">
         <Heading title="Fragebogen erstellen" description="Erstelle einen neuen Fragebogen mit einem JSON-Schema und einer Reihe von Fragen." />
 
-        <div class="flex items-end">
+        <div class="flex h-5 mb-1 self-end space-x-2 items-center">
+
+            <Check v-if="isValid" class="h-4 text-teal-600 w-4 mr-4" />
+            <CircleX v-else class="h-4 text-red-600 w-4 mr-4" />
+            <Separator orientation="vertical" />
             <Button variant="ghost" @click="reformat">
                 <WrapText class="h-4 w-4" />
             </Button>
