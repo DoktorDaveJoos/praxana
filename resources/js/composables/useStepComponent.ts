@@ -20,7 +20,7 @@ const componentMap: Record<string, any> = {
 
 export function useStepComponent() {
     const mapComponent = (step: Step) => {
-        if (step.step_type === 'dialog') {
+        if (step.step_type === 'info') {
             return DialogStep
         }
         return componentMap[step.question_type]

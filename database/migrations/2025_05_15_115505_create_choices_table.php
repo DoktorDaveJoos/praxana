@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('choices', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('step_id')
+            $table->foreignUuid('step_id')
                 ->constrained()
                 ->cascadeOnDelete();
 

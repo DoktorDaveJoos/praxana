@@ -48,7 +48,7 @@ Route::middleware([
     )->name('practices.patients.survey-runs.summary');
 
     Route::resource('practices.surveys', SurveyController::class)
-        ->only(['index', 'show', 'create']);
+        ->only(['index', 'show', 'create', 'store', 'edit', 'update', 'destroy']);
 
 });
 

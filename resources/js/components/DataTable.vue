@@ -104,8 +104,8 @@ watch(rowSelection, () => {
                         class="capitalize"
                         :modelValue="column.getIsVisible()"
                         @update:modelValue="
-                            (value) => {
-                                column.toggleVisibility(!!value);
+                            (value: boolean) => {
+                                column.toggleVisibility(value);
                             }
                         "
                     >

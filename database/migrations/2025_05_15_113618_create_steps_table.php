@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('steps', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            $table->foreignId('survey_id')
+            $table->foreignUuid('survey_id')
                 ->constrained()
                 ->cascadeOnDelete();
 

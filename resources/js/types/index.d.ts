@@ -107,7 +107,7 @@ export interface Step {
     title: string;
     content: string;
     options: StepOptions<string>;
-    step_type: StepType;
+    step_type: string;
     question_type: string;
     choices: ?Choice[];
     response: Response;

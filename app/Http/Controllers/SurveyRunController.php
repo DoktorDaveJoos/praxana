@@ -48,11 +48,13 @@ class SurveyRunController extends Controller
     {
         $this->authorize('create', [SurveyRun::class, $practice, $patient]);
 
+
         collect($request->validated('surveys'))
             ->each(function ($surveyId) use ($patient) {
                 SurveyRun::create([
                     'patient_hash' => $patient->getHash(),
                     'survey_id' => $surveyId,
+                    'current_step_id' => Survey::find($surveyId)->steps()->orderBy('order')->first()->id,
                 ]);
             });
 

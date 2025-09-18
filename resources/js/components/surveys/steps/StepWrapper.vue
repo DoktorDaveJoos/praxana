@@ -16,7 +16,7 @@ const emits = defineEmits<{
 
 const { mapComponent } = useStepComponent();
 
-const isQuestion = (step: Step) => step.step_type !== 'dialog';
+const isQuestion = (step: Step) => step.step_type !== 'info';
 
 </script>
 

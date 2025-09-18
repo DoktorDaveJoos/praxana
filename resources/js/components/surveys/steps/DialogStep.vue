@@ -14,7 +14,7 @@ const emits = defineEmits<{
  * For dialog steps, we just emit an acknowledgment value
  */
 const onSubmit = () => {
-    emits('submit', { value: 'acknowledged', type: 'dialog' });
+    emits('submit', { value: 'acknowledged', type: 'info' });
 };
 </script>
 

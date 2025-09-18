@@ -1,30 +1,33 @@
 <script setup lang="ts">
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
+import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
-import { json } from '@codemirror/lang-json';
+import { Separator } from '@/components/ui/separator';
+import { useSurveySchemaValidity } from '@/composables/useSurveySchemaValidity';
+import { createSurveySchemaLinter } from '@/lib/codemirror-survey-schema-linter';
+import { autocompletion, closeBrackets, closeBracketsKeymap, completionKeymap } from '@codemirror/autocomplete';
+import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
+import { json } from '@codemirror/lang-json';
+import { bracketMatching, defaultHighlightStyle, indentOnInput, syntaxHighlighting } from '@codemirror/language';
 import {
-    EditorView,
-    keymap,
+    crosshairCursor,
     drawSelection,
     dropCursor,
+    EditorView,
     highlightSpecialChars,
-    rectangularSelection,
-    crosshairCursor,
+    keymap,
     lineNumbers,
+    rectangularSelection,
 } from '@codemirror/view';
-import { indentOnInput, bracketMatching, syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
-import { history, defaultKeymap, historyKeymap, indentWithTab } from '@codemirror/commands';
-import { closeBrackets, closeBracketsKeymap, autocompletion, completionKeymap } from '@codemirror/autocomplete';
+import { useClipboard } from '@vueuse/core';
+import { Bone, Check, CircleX, Copy, CopyCheck, Trash, WrapText, Upload } from 'lucide-vue-next';
 import { computed, HTMLAttributes, onMounted, ref, watch } from 'vue';
-import { ListChecks, Trash, WrapText, AlertCircle, Bone, Copy, CopyCheck, Check, CircleX } from 'lucide-vue-next';
-import Heading from '@/components/Heading.vue';
-import { useClipboard } from '@vueuse/core'
-import { createSurveySchemaLinter } from "@/lib/codemirror-survey-schema-linter";
-import { useSurveySchemaValidity } from '@/composables/useSurveySchemaValidity';
 
-const { isValid, errors, extension: validityExtension, validateNow } = useSurveySchemaValidity({
+const {
+    isValid,
+    extension: validityExtension,
+    validateNow,
+} = useSurveySchemaValidity({
     collectErrors: true,
     debounceMs: 80,
 });
@@ -37,80 +40,84 @@ const props = defineProps<{
     strictJson?: boolean; // set true if you want *strict* JSON (no comments)
 }>();
 
-const emit = defineEmits<{ 'update:modelValue': [value?: string] }>();
-const { copy, copied } = useClipboard()
+const emit = defineEmits<{
+    'update:modelValue': [value?: string];
+    'upload': [];
+}>();
+const { copy, copied } = useClipboard();
 
 const example = {
-    "survey": {
-        "name": "Medizinischer Check-up – Anamnese",
-        "description": "Kurze medizinische Anamnese vor dem Termin.",
-        "version": 1,
-        "is_active": true,
-        "steps": [
+    survey: {
+        name: 'Medizinischer Check-up – Anamnese',
+        description: 'Kurze medizinische Anamnese vor dem Termin.',
+        version: 1,
+        is_active: true,
+        steps: [
             {
-                "order": 1,
-                "title": "Willkommen",
-                "content": "Diese kurze Anamnese hilft uns, Ihren Gesundheitszustand besser einzuschätzen. Bitte beantworten Sie die Fragen ehrlich. Ihre Angaben bleiben vertraulich.",
-                "step_type": "info"
+                order: 1,
+                title: 'Willkommen',
+                content:
+                    'Diese kurze Anamnese hilft uns, Ihren Gesundheitszustand besser einzuschätzen. Bitte beantworten Sie die Fragen ehrlich. Ihre Angaben bleiben vertraulich.',
+                step_type: 'info',
             },
             {
-                "order": 2,
-                "title": "Aktuelle Beschwerden",
-                "content": "Haben Sie derzeit Beschwerden? (Mehrfachauswahl möglich)",
-                "step_type": "question",
-                "question_type": "multiple_choice",
-                "options": {
-                    "min_choices": 1,
-                    "max_choices": 5,
-                    "optional": false
+                order: 2,
+                title: 'Aktuelle Beschwerden',
+                content: 'Haben Sie derzeit Beschwerden? (Mehrfachauswahl möglich)',
+                step_type: 'question',
+                question_type: 'multiple_choice',
+                options: {
+                    min_choices: 1,
+                    max_choices: 5,
+                    optional: false,
                 },
-                "choices": [
-                    { "label": "Keine Beschwerden", "value": "none", "next_step": 4, "order": 1 },
-                    { "label": "Schmerzen", "value": "pain", "next_step": null, "order": 2 },
-                    { "label": "Fieber", "value": "fever", "next_step": null, "order": 3 },
-                    { "label": "Husten", "value": "cough", "next_step": null, "order": 4 },
-                    { "label": "Atemnot", "value": "dyspnea", "next_step": null, "order": 5 }
-                ]
+                choices: [
+                    { label: 'Keine Beschwerden', value: 'none', next_step: 4, order: 1 },
+                    { label: 'Schmerzen', value: 'pain', next_step: null, order: 2 },
+                    { label: 'Fieber', value: 'fever', next_step: null, order: 3 },
+                    { label: 'Husten', value: 'cough', next_step: null, order: 4 },
+                    { label: 'Atemnot', value: 'dyspnea', next_step: null, order: 5 },
+                ],
             },
             {
-                "order": 3,
-                "title": "Medikamente",
-                "content": "Welche Medikamente nehmen Sie regelmäßig? (Wirkstoff, Dosierung, Häufigkeit)",
-                "step_type": "question",
-                "question_type": "text",
-                "options": {
-                    "placeholder": "z. B. Metformin 500 mg, 1–0–1",
-                    "max_length": 500,
-                    "optional": true
-                }
+                order: 3,
+                title: 'Medikamente',
+                content: 'Welche Medikamente nehmen Sie regelmäßig? (Wirkstoff, Dosierung, Häufigkeit)',
+                step_type: 'question',
+                question_type: 'text',
+                options: {
+                    placeholder: 'z. B. Metformin 500 mg, 1–0–1',
+                    max_length: 500,
+                    optional: true,
+                },
             },
             {
-                "order": 4,
-                "title": "Letzte Vorsorgeuntersuchung",
-                "content": "Wann war Ihre letzte Vorsorge- oder Gesundheitsuntersuchung?",
-                "step_type": "question",
-                "question_type": "date",
-                "options": {
-                    "min": "1900-01-01",
-                    "max": "today",
-                    "format": "YYYY-MM-DD",
-                    "optional": true
-                }
+                order: 4,
+                title: 'Letzte Vorsorgeuntersuchung',
+                content: 'Wann war Ihre letzte Vorsorge- oder Gesundheitsuntersuchung?',
+                step_type: 'question',
+                question_type: 'date',
+                options: {
+                    min: '1900-01-01',
+                    max: 'today',
+                    format: 'YYYY-MM-DD',
+                    optional: true,
+                },
             },
             {
-                "order": 5,
-                "title": "Kennen wir uns?",
-                "content": "Waren Sie bereits bei uns?",
-                "step_type": "question",
-                "question_type": "single_choice",
-                "choices": [
-                    { "label": "Ja", "value": "true", "order": 1 },
-                    { "label": "Nein", "value": "false", "order": 2 }
-                ]
-            }
-        ]
-    }
-}
+                order: 5,
+                title: 'Kennen wir uns?',
+                content: 'Waren Sie bereits bei uns?',
+                step_type: 'question',
+                question_type: 'single_choice',
+                choices: [
+                    { label: 'Ja', value: 'true', order: 1 },
+                    { label: 'Nein', value: 'false', order: 2 },
+                ],
+            },
+        ],
+    },
+};
 
 const cmTheme = EditorView.theme({
     '&': {
@@ -218,39 +225,44 @@ const reformat = () => {
 
 const clear = () => {
     emit('update:modelValue', undefined);
-}
+};
 
 const skeleton = () => {
-    emit('update:modelValue', JSON.stringify(example, null, 2))
-}
+    emit('update:modelValue', JSON.stringify(example, null, 2));
+};
 
 const toClipboard = () => {
-    if (! view?.state?.doc) return;
+    if (!view?.state?.doc) return;
 
-    copy(view?.state?.doc?.toString())
+    copy(view?.state?.doc?.toString());
+};
+
+const upload = () => {
+    emit('upload');
 }
 </script>
 
 <template>
-<!--    <Alert v-if="errors.length" variant="destructive" class="mb-4">-->
-<!--        <AlertCircle class="h-4 w-4" />-->
-<!--        <AlertTitle>Error</AlertTitle>-->
-<!--        <AlertDescription>{{ errors.join(', ') }}</AlertDescription>-->
-<!--    </Alert>-->
+    <!--    <Alert v-if="errors.length" variant="destructive" class="mb-4">-->
+    <!--        <AlertCircle class="h-4 w-4" />-->
+    <!--        <AlertTitle>Error</AlertTitle>-->
+    <!--        <AlertDescription>{{ errors.join(', ') }}</AlertDescription>-->
+    <!--    </Alert>-->
 
     <div class="mb-2 flex flex-col">
         <Heading title="Fragebogen erstellen" description="Erstelle einen neuen Fragebogen mit einem JSON-Schema und einer Reihe von Fragen." />
 
-        <div class="flex h-5 mb-1 self-end space-x-2 items-center">
+        <div class="mb-1 flex w-full h-5 items-center space-x-2 self-end">
+            <div class="flex w-full items-center justify-between">
+                <span v-if="isValid" class="text-sm text-muted-foreground">Alles in Ordnung</span>
+                <span v-else class="text-sm text-red-600">Bitte Fehler korrigieren</span>
 
-            <Check v-if="isValid" class="h-4 text-teal-600 w-4 mr-4" />
-            <CircleX v-else class="h-4 text-red-600 w-4 mr-4" />
+                <Check v-if="isValid" class="mr-4 h-4 w-4 text-teal-600" />
+                <CircleX v-else class="mr-4 h-4 w-4 text-red-600" />
+            </div>
             <Separator orientation="vertical" />
             <Button variant="ghost" @click="reformat">
                 <WrapText class="h-4 w-4" />
-            </Button>
-            <Button variant="ghost">
-                <ListChecks class="h-4 w-4" />
             </Button>
             <Button variant="ghost" @click="skeleton">
                 <Bone class="h-4 w-4" />
@@ -261,6 +273,10 @@ const toClipboard = () => {
             </Button>
             <Button variant="ghost" @click="clear">
                 <Trash class="h-4 w-4" />
+            </Button>
+            <Separator orientation="vertical" />
+            <Button :disabled="!isValid" variant="ghost" @click="upload">
+                <Upload class="h-4 w-4" />
             </Button>
         </div>
     </div>

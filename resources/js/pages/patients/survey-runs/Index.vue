@@ -51,7 +51,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
 const formSchema = toTypedSchema(
     z.object({
-        surveys: z.array(z.number()).min(1, 'Bitte wählen Sie mindestens einen Anamnesebogen aus.'),
+        surveys: z.array(z.union([z.number(), z.string()])).min(1, 'Bitte wählen Sie mindestens einen Anamnesebogen aus.'),
         send: z.boolean(),
     }),
 );
@@ -120,7 +120,7 @@ const selectableSurveyColumns = selectSurveyColumns({ withSelection: true, withD
                                                     <DataTable
                                                         :columns="selectableSurveyColumns"
                                                         :data="surveys.data"
-                                                        @update:selectedRows="(selected) => handleChange(selected.map((survey) => survey.id))"
+                                                        @update:selected-rows="(rows) => handleChange(rows.map((r) => r.id))"
                                                     />
                                                 </FormControl>
                                             <FormMessage />

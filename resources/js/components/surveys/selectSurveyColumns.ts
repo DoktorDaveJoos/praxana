@@ -14,18 +14,22 @@ export function selectSurveyColumns(options?: { withSelection?: boolean; withDes
             id: 'select',
             header: ({ table }) =>
                 h(Checkbox, {
-                    modelValue: table.getIsAllPageRowsSelected(),
-                    'onUpdate:modelValue': (value: boolean) => table.toggleAllPageRowsSelected(!!value),
-                    ariaLabel: 'Select all',
+                    checked: table.getIsAllPageRowsSelected(),
+                    'onUpdate:modelValue': (value: boolean) => table.toggleAllPageRowsSelected(value),
+                    'aria-label': 'Select all',
+                    // prevent sorting/focus quirks if you click the header
+                    onClick: (e: Event) => e.stopPropagation(),
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
-                    modelValue: row.getIsSelected(),
-                    'onUpdate:modelValue': (value: boolean) => row.toggleSelected(!!value),
-                    ariaLabel: 'Select row',
+                    checked: row.getIsSelected(),
+                    'onUpdate:modelValue': (value: boolean) => row.toggleSelected(value),
+                    'aria-label': 'Select row',
+                    onClick: (e: Event) => e.stopPropagation(),
                 }),
             enableSorting: false,
             enableHiding: false,
+            size: 32, // optional: keep the column narrow
         });
     }
 
