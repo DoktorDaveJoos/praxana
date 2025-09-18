@@ -18,8 +18,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property string $id
  * @property string|null $practice_id
  * @property string $name
@@ -33,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read \App\Models\Practice|null $practice
+ *
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static Builder<static>|User newModelQuery()
  * @method static Builder<static>|User newQuery()
@@ -47,6 +46,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|User whereRememberToken($value)
  * @method static Builder<static>|User whereUpdatedAt($value)
  * @method static Builder<static>|User whereWorkosId($value)
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([UserObserver::class])]

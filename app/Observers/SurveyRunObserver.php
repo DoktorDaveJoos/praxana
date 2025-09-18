@@ -27,10 +27,10 @@ class SurveyRunObserver
             $originalStatus = $surveyRun->getOriginal('status');
             $newStatus = $surveyRun->status;
 
-            Log::info("SurveyRun status change detected", [
+            Log::info('SurveyRun status change detected', [
                 'survey_run_id' => $surveyRun->id,
                 'original_status' => $originalStatus?->value ?? 'null',
-                'new_status' => $newStatus?->value ?? 'null'
+                'new_status' => $newStatus?->value ?? 'null',
             ]);
 
             // Trigger job when status changes from pending to completed

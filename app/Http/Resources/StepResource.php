@@ -30,6 +30,7 @@ class StepResource extends JsonResource
             'choices' => ChoiceResource::collection($this->choices),
             'response' => $this->whenLoaded('responses', function () {
                 $first = $this->responses->first();
+
                 return $first ? ResponseResource::make($first) : null;
             }),
             'next_step_id' => $this->next_step_id,

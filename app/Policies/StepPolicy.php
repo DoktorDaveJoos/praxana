@@ -7,7 +7,6 @@ use App\Models\Practice;
 use App\Models\Step;
 use App\Models\SurveyRun;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class StepPolicy
 {

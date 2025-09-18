@@ -13,8 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- *
- *
  * @property string $id
  * @property string $survey_run_id
  * @property string|null $step_id
@@ -24,12 +22,15 @@ use Illuminate\Support\Carbon;
  * @property-read Choice|null $choice
  * @property-read Step|null $step
  * @property-read SurveyRun|null $surveyRun
+ *
  * @method static ResponseFactory factory($count = null, $state = [])
  * @method static Builder<static>|Response newModelQuery()
  * @method static Builder<static>|Response newQuery()
  * @method static Builder<static>|Response query()
+ *
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder<static>|Response whereChoiceId($value)
  * @method static Builder<static>|Response whereCreatedAt($value)
  * @method static Builder<static>|Response whereId($value)
@@ -38,8 +39,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Response whereType($value)
  * @method static Builder<static>|Response whereUpdatedAt($value)
  * @method static Builder<static>|Response whereValue($value)
+ *
  * @property int $is_skipped
+ *
  * @method static Builder<static>|Response whereIsSkipped($value)
+ *
  * @mixin Eloquent
  */
 class Response extends Model
@@ -87,7 +91,7 @@ class Response extends Model
 
         // For everything else we expect plain strings already:
         if ($type !== 'single_choice' && $type !== 'multiple_choice') {
-            return is_scalar($this->value) ? trim((string)$this->value) : $this->stringify($this->value);
+            return is_scalar($this->value) ? trim((string) $this->value) : $this->stringify($this->value);
         }
 
         // Value might be: id, JSON string, array object, or array of ids/objects
@@ -103,13 +107,14 @@ class Response extends Model
     {
         if (is_string($v)) {
             $s = ltrim($v);
-            if ($s !== '' && in_array($s[0] ?? '', ['[','{'], true)) {
+            if ($s !== '' && in_array($s[0] ?? '', ['[', '{'], true)) {
                 $decoded = json_decode($v, true);
                 if (json_last_error() === JSON_ERROR_NONE) {
                     return $decoded;
                 }
             }
         }
+
         return $v;
     }
 
@@ -117,22 +122,27 @@ class Response extends Model
     protected function singleChoiceText($raw): string
     {
         if ($this->choice) {
-            return $this->choice->label ?? $this->choice->value ?? (string)$this->choice->id;
+            return $this->choice->label ?? $this->choice->value ?? (string) $this->choice->id;
         }
 
         // If value is an object/array like {id, label, value}
         if (is_array($raw)) {
-            if (array_key_exists('label', $raw) && $raw['label'] !== null) return (string)$raw['label'];
-            if (array_key_exists('value', $raw) && $raw['value'] !== null) return (string)$raw['value'];
-            if (array_key_exists('id', $raw) && $raw['id'] !== null) {
-                return $this->choiceLabelById($raw['id']) ?? (string)$raw['id'];
+            if (array_key_exists('label', $raw) && $raw['label'] !== null) {
+                return (string) $raw['label'];
             }
+            if (array_key_exists('value', $raw) && $raw['value'] !== null) {
+                return (string) $raw['value'];
+            }
+            if (array_key_exists('id', $raw) && $raw['id'] !== null) {
+                return $this->choiceLabelById($raw['id']) ?? (string) $raw['id'];
+            }
+
             return $this->stringify($raw);
         }
 
         // If it's a scalar id
         if (is_scalar($raw)) {
-            return $this->choiceLabelById($raw) ?? trim((string)$raw);
+            return $this->choiceLabelById($raw) ?? trim((string) $raw);
         }
 
         return $this->stringify($raw);
@@ -147,11 +157,11 @@ class Response extends Model
             foreach ($raw as $item) {
                 if (is_array($item)) {
                     $labels[] = $item['label'] ?? $item['value'] ?? (
-                    isset($item['id']) ? ($this->choiceLabelById($item['id']) ?? (string)$item['id']) : $this->stringify($item)
+                        isset($item['id']) ? ($this->choiceLabelById($item['id']) ?? (string) $item['id']) : $this->stringify($item)
                     );
                 } else {
                     // scalar id
-                    $labels[] = $this->choiceLabelById($item) ?? trim((string)$item);
+                    $labels[] = $this->choiceLabelById($item) ?? trim((string) $item);
                 }
             }
         } else {
@@ -160,14 +170,15 @@ class Response extends Model
         }
 
         // Clean + join
-        $labels = array_values(array_filter(array_map(fn($x) => trim((string)$x), $labels)));
+        $labels = array_values(array_filter(array_map(fn ($x) => trim((string) $x), $labels)));
+
         return implode(', ', array_unique($labels));
     }
 
     protected function choiceLabelById($id): ?string
     {
         $choice = $this->step && method_exists($this->step, 'choices')
-            ? $this->step->choices->firstWhere('id', (int)$id)
+            ? $this->step->choices->firstWhere('id', (int) $id)
             : null;
 
         return $choice?->label ?? $choice?->value ?? null;
@@ -175,8 +186,13 @@ class Response extends Model
 
     protected function stringify($v): string
     {
-        if (is_null($v)) return '';
-        if (is_scalar($v)) return trim((string)$v);
+        if (is_null($v)) {
+            return '';
+        }
+        if (is_scalar($v)) {
+            return trim((string) $v);
+        }
+
         return trim(json_encode($v, JSON_UNESCAPED_UNICODE));
     }
 }

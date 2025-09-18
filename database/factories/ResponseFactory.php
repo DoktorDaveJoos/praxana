@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\Response;
 use App\Models\Step;
 use App\QuestionType;
-use App\ResponseType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use InvalidArgumentException;
 
@@ -32,7 +31,7 @@ class ResponseFactory extends Factory
             $qt = $step->question_type;
 
             // Fallback to a simple text if no question type is set.
-            if (!$qt) {
+            if (! $qt) {
                 return [
                     'type' => QuestionType::Text,
                     'value' => $this->faker->sentence(),
@@ -55,7 +54,8 @@ class ResponseFactory extends Factory
 
                 case QuestionType::SingleChoice:
                     // Store the chosen option as text (using the choice id as a safe fallback)
-                    $choiceId = (string)($step->choices()->inRandomOrder()->value('id') ?? $this->faker->numberBetween(1, 5));
+                    $choiceId = (string) ($step->choices()->inRandomOrder()->value('id') ?? $this->faker->numberBetween(1, 5));
+
                     return [
                         'type' => QuestionType::SingleChoice,
                         'value' => $choiceId, // or swap to a label if you have one, e.g. ->value('label')
@@ -72,13 +72,13 @@ class ResponseFactory extends Factory
 
                     // Select at least 2 if available; otherwise 1
                     $count = $choices->count();
-                    $take  = $count >= 2 ? $this->faker->numberBetween(2, $count) : 1;
+                    $take = $count >= 2 ? $this->faker->numberBetween(2, $count) : 1;
 
                     $selected = $choices->shuffle()->take($take)->values();
 
                     return [
                         // Store JSON string of the selected choices
-                        'type'  => QuestionType::MultipleChoice,
+                        'type' => QuestionType::MultipleChoice,
                         'value' => $selected->toJson(),
                     ];
 

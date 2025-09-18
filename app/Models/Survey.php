@@ -12,9 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- *
- *
  * @propery int $id
+ *
  * @property string $name
  * @property string $description
  * @property string $version
@@ -23,13 +22,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read int|null $steps_count
  * @property-read Collection<int, SurveyRun> $surveyRuns
  * @property-read int|null $survey_runs_count
+ *
  * @method static SurveyFactory factory($count = null, $state = [])
  * @method static Builder<static>|Survey newModelQuery()
  * @method static Builder<static>|Survey newQuery()
  * @method static Builder<static>|Survey query()
+ *
  * @property int $id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static Builder<static>|Survey whereCreatedAt($value)
  * @method static Builder<static>|Survey whereDescription($value)
  * @method static Builder<static>|Survey whereId($value)
@@ -37,6 +39,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder<static>|Survey whereName($value)
  * @method static Builder<static>|Survey whereUpdatedAt($value)
  * @method static Builder<static>|Survey whereVersion($value)
+ *
  * @mixin Eloquent
  */
 class Survey extends Model
@@ -49,7 +52,7 @@ class Survey extends Model
         'description',
         'version',
         'is_active',
-        'practice_hash'
+        'practice_hash',
     ];
 
     protected $casts = [

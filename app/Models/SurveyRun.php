@@ -16,8 +16,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
- *
- *
  * @property int $id
  * @property int $survey_id
  * @property string $patient_hash
@@ -30,12 +28,15 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $responses_count
  * @property-read Step|null $step
  * @property-read Survey|null $survey
+ *
  * @method static SurveyRunFactory factory($count = null, $state = [])
  * @method static Builder<static>|SurveyRun newModelQuery()
  * @method static Builder<static>|SurveyRun newQuery()
  * @method static Builder<static>|SurveyRun query()
+ *
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder<static>|SurveyRun whereAiAnalysis($value)
  * @method static Builder<static>|SurveyRun whereCreatedAt($value)
  * @method static Builder<static>|SurveyRun whereCurrentStepId($value)
@@ -46,6 +47,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|SurveyRun whereStatus($value)
  * @method static Builder<static>|SurveyRun whereSurveyId($value)
  * @method static Builder<static>|SurveyRun whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class SurveyRun extends Model
@@ -90,7 +92,7 @@ class SurveyRun extends Model
     public function pubmedPrompt(): string
     {
         $surveyName = $this->survey?->name ?? 'Survey';
-        $surveyDesc = trim((string)$this->survey?->description);
+        $surveyDesc = trim((string) $this->survey?->description);
 
         $prompt = "Based on the following patient survey responses, generate a focused PubMed search query that will find relevant medical literature:\n\n";
         $prompt .= "Survey: {$surveyName}\n";
@@ -101,13 +103,13 @@ class SurveyRun extends Model
 
         $i = 1;
         foreach ($this->responses as $response) {
-            if (!$response->step) {
+            if (! $response->step) {
                 continue;
             }
 
             // inside foreach ($this->responses as $response)
-            $q      = $response->step->title ?? 'Untitled question';
-            $c      = trim(($response->step->content ?? ''));
+            $q = $response->step->title ?? 'Untitled question';
+            $c = trim(($response->step->content ?? ''));
             $answer = $response->answerText(); // <<— fix: always a string now
 
             $prompt .= "{$i}. Question: {$q}\n";
@@ -126,7 +128,7 @@ class SurveyRun extends Model
         $prompt .= "3. Focuses on the most significant medical conditions or symptoms mentioned\n";
         $prompt .= "4. Is specific enough to return relevant results but not too narrow\n";
         $prompt .= "5. Follows PubMed search syntax best practices\n\n";
-        $prompt .= "Return only the search query without any additional explanation or formatting.";
+        $prompt .= 'Return only the search query without any additional explanation or formatting.';
 
         return $prompt;
     }

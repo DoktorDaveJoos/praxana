@@ -14,8 +14,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property string $id
  * @property string $name
  * @property string|null $address
@@ -28,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, \App\Models\User> $users
  * @property-read int|null $users_count
+ *
  * @method static \Database\Factories\PracticeFactory factory($count = null, $state = [])
  * @method static Builder<static>|Practice newModelQuery()
  * @method static Builder<static>|Practice newQuery()
@@ -42,6 +41,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Practice wherePhone($value)
  * @method static Builder<static>|Practice wherePostalCode($value)
  * @method static Builder<static>|Practice whereUpdatedAt($value)
+ *
  * @mixin Eloquent
  */
 class Practice extends Model

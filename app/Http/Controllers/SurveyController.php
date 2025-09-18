@@ -72,7 +72,7 @@ class SurveyController extends Controller
                     'content' => $step['content'],
                 ]);
 
-                if (!empty($step['choices'])) {
+                if (! empty($step['choices'])) {
                     foreach ($step['choices'] as $choice) {
                         Choice::create([
                             'step_id' => $persistedStep->id,

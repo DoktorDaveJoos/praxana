@@ -48,7 +48,6 @@ class SurveyRunController extends Controller
     {
         $this->authorize('create', [SurveyRun::class, $practice, $patient]);
 
-
         collect($request->validated('surveys'))
             ->each(function ($surveyId) use ($patient) {
                 SurveyRun::create([
@@ -111,7 +110,7 @@ class SurveyRunController extends Controller
         return redirect()->route('practices.patients.survey-runs.show', [
             'practice' => $practice,
             'patient' => $patient,
-            'survey_run' => $surveyRun
+            'survey_run' => $surveyRun,
         ]);
     }
 

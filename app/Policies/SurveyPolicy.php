@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\Practice;
 use App\Models\Survey;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class SurveyPolicy
 {

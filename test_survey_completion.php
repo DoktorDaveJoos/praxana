@@ -2,12 +2,11 @@
 
 require_once 'vendor/autoload.php';
 
+use App\Models\Response;
+use App\Models\Step;
 use App\Models\Survey;
 use App\Models\SurveyRun;
-use App\Models\Step;
-use App\Models\Response;
 use App\SurveyRunStatus;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Queue;
 
 // Bootstrap Laravel
@@ -26,7 +25,7 @@ try {
     // Create a test survey
     $survey = Survey::factory()->create([
         'name' => 'Test Medical Survey',
-        'description' => 'A test survey for medical analysis'
+        'description' => 'A test survey for medical analysis',
     ]);
 
     // Create some test steps (questions)
@@ -36,7 +35,7 @@ try {
         'content' => 'Please describe your current symptoms',
         'step_type' => 'question',
         'question_type' => 'text',
-        'order' => 1
+        'order' => 1,
     ]);
 
     $step2 = Step::create([
@@ -45,14 +44,14 @@ try {
         'content' => 'Duration of symptoms',
         'step_type' => 'question',
         'question_type' => 'text',
-        'order' => 2
+        'order' => 2,
     ]);
 
     // Create a survey run with pending status
     $surveyRun = SurveyRun::factory()->create([
         'survey_id' => $survey->id,
         'status' => SurveyRunStatus::Pending,
-        'patient_hash' => 'test-patient-hash'
+        'patient_hash' => 'test-patient-hash',
     ]);
 
     echo "   ✅ Created survey run ID: {$surveyRun->id}\n";
@@ -64,13 +63,13 @@ try {
     Response::factory()->create([
         'survey_run_id' => $surveyRun->id,
         'step_id' => $step1->id,
-        'value' => 'I have been experiencing headaches and fatigue'
+        'value' => 'I have been experiencing headaches and fatigue',
     ]);
 
     Response::factory()->create([
         'survey_run_id' => $surveyRun->id,
         'step_id' => $step2->id,
-        'value' => 'About 2 weeks'
+        'value' => 'About 2 weeks',
     ]);
 
     echo "   ✅ Added test responses\n\n";
@@ -81,7 +80,7 @@ try {
     // This should trigger the observer and dispatch the job
     $surveyRun->update([
         'status' => SurveyRunStatus::Completed,
-        'finished_at' => now()
+        'finished_at' => now(),
     ]);
 
     echo "   ✅ Status updated to: {$surveyRun->fresh()->status->value}\n";
@@ -121,7 +120,7 @@ try {
     echo "- Queue worker running (php artisan queue:work)\n";
 
 } catch (Exception $e) {
-    echo "❌ Test failed with error: " . $e->getMessage() . "\n";
-    echo "Stack trace:\n" . $e->getTraceAsString() . "\n";
+    echo '❌ Test failed with error: '.$e->getMessage()."\n";
+    echo "Stack trace:\n".$e->getTraceAsString()."\n";
     exit(1);
 }

@@ -28,25 +28,25 @@ class UpdateSurveyRunRequest extends FormRequest
             'status' => [
                 'sometimes',
                 'required',
-                Rule::enum(SurveyRunStatus::class)
+                Rule::enum(SurveyRunStatus::class),
             ],
             'started_at' => [
                 'sometimes',
                 'nullable',
-                'date'
+                'date',
             ],
             'finished_at' => [
                 'sometimes',
                 'nullable',
                 'date',
-                'after_or_equal:started_at'
+                'after_or_equal:started_at',
             ],
             'current_step_id' => [
                 'sometimes',
                 'nullable',
                 'integer',
-                'exists:steps,id'
-            ]
+                'exists:steps,id',
+            ],
         ];
     }
 }

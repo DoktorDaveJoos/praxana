@@ -16,7 +16,6 @@ use App\StepType;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use InvalidArgumentException;
 use Throwable;
 
@@ -58,7 +57,7 @@ class SurveyStepController extends Controller
         $totalSteps = $surveyRun->survey->steps->count();
 
         $progress = $totalSteps > 1
-            ? (int)round((($step->order - 1) / ($totalSteps - 1)) * 100)
+            ? (int) round((($step->order - 1) / ($totalSteps - 1)) * 100)
             : 100;
 
         return inertia('patients/survey-runs/steps/Show', [
@@ -91,16 +90,16 @@ class SurveyStepController extends Controller
      *   ],
      *   "meta": { "client_id": "uuid", "time_spent_ms": 1234 }
      * }
+     *
      * @throws Throwable
      */
     public function update(
-        Practice  $practice,
-        Patient   $patient,
+        Practice $practice,
+        Patient $patient,
         SurveyRun $surveyRun,
-        Step      $step,
-        Request   $request
-    )
-    {
+        Step $step,
+        Request $request
+    ) {
         $this->authorize('update', [SurveyRun::class, $practice, $patient, $surveyRun]);
 
         // Integrity: step must belong to the survey of this run
@@ -118,7 +117,7 @@ class SurveyStepController extends Controller
 
         // Question step
         // Determine "required" from options (default false)
-        $required = (bool)data_get($step->options, 'required', false);
+        $required = (bool) data_get($step->options, 'required', false);
 
         // Basic envelope validation (skipped/value handled below)
         $envelope = $request->validate([
@@ -126,7 +125,7 @@ class SurveyStepController extends Controller
             // don't validate 'value' here; we do it dynamically
         ]);
 
-        $skipped = (bool)($envelope['skipped'] ?? false);
+        $skipped = (bool) ($envelope['skipped'] ?? false);
 
         // For options/multi we need the available choice IDs
         $choiceIds = collect();
@@ -145,17 +144,19 @@ class SurveyStepController extends Controller
             QuestionType::SingleChoice => array_merge($base, [
                 'array',
                 function ($attribute, $value, $fail) use ($choiceIds) {
-                    if (!is_array($value)) {
+                    if (! is_array($value)) {
                         $fail('The selected value must be an object.');
+
                         return;
                     }
 
-                    if (!array_key_exists('id', $value)) {
+                    if (! array_key_exists('id', $value)) {
                         $fail("The selected value must include an 'id'.");
+
                         return;
                     }
 
-                    if (!$choiceIds->contains($value['id'])) {
+                    if (! $choiceIds->contains($value['id'])) {
                         $fail("Invalid choice ID: {$value['id']}");
                     }
                 },
@@ -168,7 +169,7 @@ class SurveyStepController extends Controller
                 'bail',
                 function ($attribute, $value, $fail) use ($choiceIds) {
                     foreach ($value as $index => $item) {
-                        if (!isset($item['id']) || !$choiceIds->contains($item['id'])) {
+                        if (! isset($item['id']) || ! $choiceIds->contains($item['id'])) {
                             $fail("Invalid choice ID at index $index.");
                         }
                     }
@@ -180,11 +181,11 @@ class SurveyStepController extends Controller
         };
 
         // If explicitly skipped, bypass value validation and store is_skipped=true
-        if (!$skipped) {
+        if (! $skipped) {
             validator(
                 ['value' => $request->input('value')],
                 ['value' => $rules],
-            // Optional: custom messages per type could go here
+                // Optional: custom messages per type could go here
             )->validate();
         }
 
@@ -214,8 +215,8 @@ class SurveyStepController extends Controller
     }
 
     public function summary(
-        Practice  $practice,
-        Patient   $patient,
+        Practice $practice,
+        Patient $patient,
         SurveyRun $surveyRun)
     {
         return inertia('patients/survey-runs/steps/Summary', [
@@ -235,23 +236,22 @@ class SurveyStepController extends Controller
     }
 
     private function redirectToNextStep(
-        Practice  $practice,
-        Patient   $patient,
+        Practice $practice,
+        Patient $patient,
         SurveyRun $surveyRun,
-        Step      $step
-    )
-    {
+        Step $step
+    ) {
         return $step->nextStep()
             ? redirect()->route('practices.patients.survey-runs.steps.show', [
-            'practice' => $practice,
-            'patient' => $patient,
-            'survey_run' => $surveyRun,
-            'step' => $step->nextStep() ?? $step,
-        ])
+                'practice' => $practice,
+                'patient' => $patient,
+                'survey_run' => $surveyRun,
+                'step' => $step->nextStep() ?? $step,
+            ])
             : redirect()->route('practices.patients.survey-runs.summary', [
-            'practice' => $practice,
-            'patient' => $patient,
-            'survey_run' => $surveyRun,
-        ]);
+                'practice' => $practice,
+                'patient' => $patient,
+                'survey_run' => $surveyRun,
+            ]);
     }
 }

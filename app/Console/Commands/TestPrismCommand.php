@@ -30,7 +30,7 @@ class TestPrismCommand extends Command
 
         try {
             // Test if Prism can be instantiated
-            $prism = new Prism();
+            $prism = new Prism;
             $this->info('✅ Prism class loaded successfully');
 
             // Test configuration
@@ -52,8 +52,9 @@ class TestPrismCommand extends Command
             $this->showUsageExamples();
 
         } catch (\Exception $e) {
-            $this->error('❌ Error testing Prism: ' . $e->getMessage());
-            $this->line('Stack trace: ' . $e->getTraceAsString());
+            $this->error('❌ Error testing Prism: '.$e->getMessage());
+            $this->line('Stack trace: '.$e->getTraceAsString());
+
             return 1;
         }
 
@@ -71,10 +72,10 @@ class TestPrismCommand extends Command
                 ->generate();
 
             $this->info('✅ API call successful!');
-            $this->line('Response: ' . $response->text);
+            $this->line('Response: '.$response->text);
 
         } catch (\Exception $e) {
-            $this->error('❌ API call failed: ' . $e->getMessage());
+            $this->error('❌ API call failed: '.$e->getMessage());
             $this->line('This might be due to:');
             $this->line('- Invalid API key');
             $this->line('- Insufficient credits');

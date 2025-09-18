@@ -12,7 +12,7 @@ use App\Models\SurveyRun;
 use App\QuestionType;
 use App\StepType;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str; // <-- add this
+// <-- add this
 use Throwable;
 
 class DatabaseSeeder extends Seeder
@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             for ($i = 1; $i <= $stepsCount; $i++) {
                 $step = Step::factory()->create([
                     'survey_id' => $survey->id,
-                    'order'     => $i,
+                    'order' => $i,
                 ]);
 
                 // Add choices if needed
@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
             $surveys->random(rand(1, 3))->each(function (Survey $survey) use ($patient) {
                 $surveyRun = SurveyRun::factory()->create([
                     'patient_hash' => $patient->getHash(),
-                    'survey_id'    => $survey->id,
+                    'survey_id' => $survey->id,
                 ]);
 
                 $survey->steps->each(function (Step $step) use ($surveyRun) {
@@ -75,7 +75,7 @@ class DatabaseSeeder extends Seeder
                                 ->forStep($step)
                                 ->create([
                                     'survey_run_id' => $surveyRun->id,
-                                    'step_id'       => $step->id,
+                                    'step_id' => $step->id,
                                 ]);
                         }
                     }

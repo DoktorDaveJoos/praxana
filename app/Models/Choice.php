@@ -10,20 +10,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
- *
  * @property int $id
  * @property int $step_id
  * @property string $label
  * @property string $value
  * @property int $order
  * @property int|null $optional_next_step
+ *
  * @method static ChoiceFactory factory($count = null, $state = [])
  * @method static Builder<static>|Choice newModelQuery()
  * @method static Builder<static>|Choice newQuery()
  * @method static Builder<static>|Choice query()
+ *
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static Builder<static>|Choice whereCreatedAt($value)
  * @method static Builder<static>|Choice whereId($value)
  * @method static Builder<static>|Choice whereLabel($value)
@@ -32,7 +33,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder<static>|Choice whereStepId($value)
  * @method static Builder<static>|Choice whereUpdatedAt($value)
  * @method static Builder<static>|Choice whereValue($value)
+ *
  * @property-read \App\Models\Step $step
+ *
  * @mixin Eloquent
  */
 class Choice extends Model

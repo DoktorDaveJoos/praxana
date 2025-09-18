@@ -23,13 +23,13 @@ class StoreSurveyRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $survey = (array)($this->input('survey') ?? []);
+        $survey = (array) ($this->input('survey') ?? []);
 
-        if (!array_key_exists('version', $survey) || $survey['version'] === null) {
+        if (! array_key_exists('version', $survey) || $survey['version'] === null) {
             $survey['version'] = 1;
         }
 
-        if (!array_key_exists('is_active', $survey) || $survey['is_active'] === null) {
+        if (! array_key_exists('is_active', $survey) || $survey['is_active'] === null) {
             $survey['is_active'] = true;
         }
 
@@ -78,7 +78,7 @@ class StoreSurveyRequest extends FormRequest
      */
     public function withValidator(Validator $validator): void
     {
-        $steps = (array)data_get($this->all(), 'survey.steps', []);
+        $steps = (array) data_get($this->all(), 'survey.steps', []);
 
         foreach ($steps as $i => $step) {
             $stepType = data_get($step, 'step_type');
@@ -86,43 +86,43 @@ class StoreSurveyRequest extends FormRequest
 
             // When step_type = question => question_type is required
             if ($stepType === 'question') {
-                $validator->sometimes("survey.steps.$i.question_type", 'required', fn() => true);
+                $validator->sometimes("survey.steps.$i.question_type", 'required', fn () => true);
 
                 // Choices vs options per question_type
                 if (in_array($qType, ['single_choice', 'multiple_choice'], true)) {
                     // choices required
-                    $validator->sometimes("survey.steps.$i.choices", 'required|array|min:1', fn() => true);
+                    $validator->sometimes("survey.steps.$i.choices", 'required|array|min:1', fn () => true);
 
                     // options schema for choice questions
-                    $validator->sometimes("survey.steps.$i.options.min_choices", 'nullable|integer|min:0', fn() => true);
-                    $validator->sometimes("survey.steps.$i.options.max_choices", 'nullable|integer|min:1', fn() => true);
-                    $validator->sometimes("survey.steps.$i.options.allow_other", 'nullable|boolean', fn() => true);
-                    $validator->sometimes("survey.steps.$i.options.other_label", 'nullable|string', fn() => true);
-                    $validator->sometimes("survey.steps.$i.options.optional", 'nullable|boolean', fn() => true);
+                    $validator->sometimes("survey.steps.$i.options.min_choices", 'nullable|integer|min:0', fn () => true);
+                    $validator->sometimes("survey.steps.$i.options.max_choices", 'nullable|integer|min:1', fn () => true);
+                    $validator->sometimes("survey.steps.$i.options.allow_other", 'nullable|boolean', fn () => true);
+                    $validator->sometimes("survey.steps.$i.options.other_label", 'nullable|string', fn () => true);
+                    $validator->sometimes("survey.steps.$i.options.optional", 'nullable|boolean', fn () => true);
                 }
 
                 if ($qType === 'text') {
                     // choices prohibited; text options
-                    $validator->sometimes("survey.steps.$i.choices", 'prohibited', fn() => true);
+                    $validator->sometimes("survey.steps.$i.choices", 'prohibited', fn () => true);
 
-                    $validator->sometimes("survey.steps.$i.options.placeholder", 'nullable|string', fn() => true);
-                    $validator->sometimes("survey.steps.$i.options.max_length", 'nullable|integer|min:1', fn() => true);
-                    $validator->sometimes("survey.steps.$i.options.optional", 'nullable|boolean', fn() => true);
+                    $validator->sometimes("survey.steps.$i.options.placeholder", 'nullable|string', fn () => true);
+                    $validator->sometimes("survey.steps.$i.options.max_length", 'nullable|integer|min:1', fn () => true);
+                    $validator->sometimes("survey.steps.$i.options.optional", 'nullable|boolean', fn () => true);
                 }
 
                 if ($qType === 'number') {
                     // choices prohibited; number options
-                    $validator->sometimes("survey.steps.$i.choices", 'prohibited', fn() => true);
+                    $validator->sometimes("survey.steps.$i.choices", 'prohibited', fn () => true);
 
-                    $validator->sometimes("survey.steps.$i.options.min", 'nullable|numeric', fn() => true);
-                    $validator->sometimes("survey.steps.$i.options.max", 'nullable|numeric', fn() => true);
-                    $validator->sometimes("survey.steps.$i.options.step", 'nullable|numeric', fn() => true);
-                    $validator->sometimes("survey.steps.$i.options.optional", 'nullable|boolean', fn() => true);
+                    $validator->sometimes("survey.steps.$i.options.min", 'nullable|numeric', fn () => true);
+                    $validator->sometimes("survey.steps.$i.options.max", 'nullable|numeric', fn () => true);
+                    $validator->sometimes("survey.steps.$i.options.step", 'nullable|numeric', fn () => true);
+                    $validator->sometimes("survey.steps.$i.options.optional", 'nullable|boolean', fn () => true);
                 }
 
                 if ($qType === 'date') {
                     // choices prohibited; date options
-                    $validator->sometimes("survey.steps.$i.choices", 'prohibited', fn() => true);
+                    $validator->sometimes("survey.steps.$i.choices", 'prohibited', fn () => true);
 
                     // min/max: allow literal 'today' OR YYYY-MM-DD
                     $dateRule = function (string $attribute, $value, $fail) {
@@ -139,31 +139,31 @@ class StoreSurveyRequest extends FormRequest
 
                         $errors = \DateTime::getLastErrors();
                         $warningCount = is_array($errors) ? ($errors['warning_count'] ?? 0) : 0;
-                        $errorCount   = is_array($errors) ? ($errors['error_count'] ?? 0) : 0;
+                        $errorCount = is_array($errors) ? ($errors['error_count'] ?? 0) : 0;
 
                         if (! $dt || $warningCount > 0 || $errorCount > 0) {
                             $fail("The $attribute must be 'today' or a valid date in Y-m-d format.");
                         }
                     };
 
-                    $validator->sometimes("survey.steps.$i.options.min", ['nullable', $dateRule], fn() => true);
-                    $validator->sometimes("survey.steps.$i.options.max", ['nullable', $dateRule], fn() => true);
+                    $validator->sometimes("survey.steps.$i.options.min", ['nullable', $dateRule], fn () => true);
+                    $validator->sometimes("survey.steps.$i.options.max", ['nullable', $dateRule], fn () => true);
 
                     // format: enum ['YYYY-MM-DD', null]
-                    $validator->sometimes("survey.steps.$i.options.format", ['nullable', Rule::in(['YYYY-MM-DD'])], fn() => true);
-                    $validator->sometimes("survey.steps.$i.options.optional", 'nullable|boolean', fn() => true);
+                    $validator->sometimes("survey.steps.$i.options.format", ['nullable', Rule::in(['YYYY-MM-DD'])], fn () => true);
+                    $validator->sometimes("survey.steps.$i.options.optional", 'nullable|boolean', fn () => true);
                 }
             } else { // step_type = info
                 // For info steps, these must be null/absent (schema "else")
-                $validator->sometimes("survey.steps.$i.question_type", 'prohibited', fn() => true);
-                $validator->sometimes("survey.steps.$i.options", 'prohibited', fn() => true);
-                $validator->sometimes("survey.steps.$i.choices", 'prohibited', fn() => true);
+                $validator->sometimes("survey.steps.$i.question_type", 'prohibited', fn () => true);
+                $validator->sometimes("survey.steps.$i.options", 'prohibited', fn () => true);
+                $validator->sometimes("survey.steps.$i.choices", 'prohibited', fn () => true);
             }
         }
 
         // Enforce "additionalProperties: false" (best-effort) for objects
         $validator->after(function (Validator $v) use ($steps) {
-            $data = (array)$this->input();
+            $data = (array) $this->input();
 
             // Allowed keys at each object level per schema
             $allowedSurvey = ['name', 'description', 'version', 'is_active', 'steps'];
@@ -176,23 +176,23 @@ class StoreSurveyRequest extends FormRequest
             $dateOptionKeys = ['min', 'max', 'format', 'optional'];
 
             // survey additional props
-            $survey = (array)data_get($data, 'survey', []);
+            $survey = (array) data_get($data, 'survey', []);
             $extraSurvey = array_diff(array_keys($survey), $allowedSurvey);
             if ($extraSurvey) {
-                $v->errors()->add('survey', 'Unknown keys: ' . implode(', ', $extraSurvey));
+                $v->errors()->add('survey', 'Unknown keys: '.implode(', ', $extraSurvey));
             }
 
             // steps and nested objects
             foreach ($steps as $i => $step) {
                 // step additional props
-                $extraStep = array_diff(array_keys((array)$step), $allowedStep);
+                $extraStep = array_diff(array_keys((array) $step), $allowedStep);
                 if ($extraStep) {
-                    $v->errors()->add("survey.steps.$i", 'Unknown keys: ' . implode(', ', $extraStep));
+                    $v->errors()->add("survey.steps.$i", 'Unknown keys: '.implode(', ', $extraStep));
                 }
 
                 // options additional props based on question_type
                 $qType = data_get($step, 'question_type');
-                $opts = (array)data_get($step, 'options', []);
+                $opts = (array) data_get($step, 'options', []);
                 if ($opts !== []) {
                     $allowed = match ($qType) {
                         'single_choice', 'multiple_choice' => $choiceOptionKeys,
@@ -204,7 +204,7 @@ class StoreSurveyRequest extends FormRequest
                     if ($allowed !== []) {
                         $extraOpts = array_diff(array_keys($opts), $allowed);
                         if ($extraOpts) {
-                            $v->errors()->add("survey.steps.$i.options", 'Unknown keys: ' . implode(', ', $extraOpts));
+                            $v->errors()->add("survey.steps.$i.options", 'Unknown keys: '.implode(', ', $extraOpts));
                         }
                     }
                 }
@@ -213,9 +213,9 @@ class StoreSurveyRequest extends FormRequest
                 $choices = data_get($step, 'choices');
                 if (is_array($choices)) {
                     foreach ($choices as $j => $choice) {
-                        $extraChoice = array_diff(array_keys((array)$choice), $allowedChoice);
+                        $extraChoice = array_diff(array_keys((array) $choice), $allowedChoice);
                         if ($extraChoice) {
-                            $v->errors()->add("survey.steps.$i.choices.$j", 'Unknown keys: ' . implode(', ', $extraChoice));
+                            $v->errors()->add("survey.steps.$i.choices.$j", 'Unknown keys: '.implode(', ', $extraChoice));
                         }
                     }
                 }

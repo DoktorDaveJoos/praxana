@@ -20,11 +20,10 @@ class ProcessSurveyCompletion implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $timeout = 120;
 
-    public function __construct(public SurveyRun $surveyRun)
-    {
-    }
+    public function __construct(public SurveyRun $surveyRun) {}
 
     /**
      * @throws Exception
@@ -32,7 +31,7 @@ class ProcessSurveyCompletion implements ShouldQueue
     public function handle(): void
     {
         try {
-            Log::info("Processing survey completion", ['survey_run_id' => $this->surveyRun->getKey()]);
+            Log::info('Processing survey completion', ['survey_run_id' => $this->surveyRun->getKey()]);
 
             // Load the minimum we need, only if not already loaded by SerializesModels
             $this->surveyRun->loadMissing(['survey', 'responses.step', 'responses.choice']);
@@ -42,7 +41,7 @@ class ProcessSurveyCompletion implements ShouldQueue
 
             // Get PubMed search query from LLM
             $searchQuery = $this->generatePubMedSearchQuery($prompt);
-            if (!strlen($searchQuery)) {
+            if (! strlen($searchQuery)) {
                 throw new Exception('Failed to generate a PubMed query from LLM.');
             }
 
@@ -63,9 +62,9 @@ class ProcessSurveyCompletion implements ShouldQueue
                 ],
             ]);
 
-            Log::info("Survey completion processed", ['survey_run_id' => $this->surveyRun->getKey()]);
+            Log::info('Survey completion processed', ['survey_run_id' => $this->surveyRun->getKey()]);
         } catch (Exception $e) {
-            Log::error("Processing survey completion failed", [
+            Log::error('Processing survey completion failed', [
                 'survey_run_id' => $this->surveyRun->getKey(),
                 'error' => $e->getMessage(),
             ]);
@@ -80,7 +79,7 @@ class ProcessSurveyCompletion implements ShouldQueue
     {
         // Prepare a compact evidence bundle for the LLM
         $articles = Arr::get($pubmed, 'articles', []);
-        $count = (int)Arr::get($pubmed, 'count', 0);
+        $count = (int) Arr::get($pubmed, 'count', 0);
 
         // If nothing came back, return a graceful note so UI can still render
         if (empty($articles)) {
@@ -99,7 +98,7 @@ class ProcessSurveyCompletion implements ShouldQueue
 
         $evidenceForLLM = $this->formatArticlesForLLM($articles);
 
-        $system = <<<SYS
+        $system = <<<'SYS'
                     You are a clinically rigorous medical evidence synthesizer. Your job is to:
                     1) Read patient context and goals.
                     2) Review the PubMed records provided (title, authors, journal, pub date, PMID).
@@ -128,9 +127,11 @@ class ProcessSurveyCompletion implements ShouldQueue
                 ->asText();
 
             $text = trim($response->text ?? '');
-            return $text !== '' ? $text : "_No summary generated._";
+
+            return $text !== '' ? $text : '_No summary generated._';
         } catch (Exception $e) {
             Log::error('LLM summary generation failed', ['error' => $e->getMessage()]);
+
             return "_Summary generation failed: {$e->getMessage()}_";
         }
     }
@@ -138,8 +139,8 @@ class ProcessSurveyCompletion implements ShouldQueue
     private function generatePubMedSearchQuery(string $prompt): string
     {
         $sys = 'You are a medical research assistant specialized in creating effective PubMed search queries. '
-            . 'Analyze patient survey responses and generate a precise PubMed search query. '
-            . 'Prefer MeSH when obvious; include Boolean operators; avoid overly broad terms; no explanations, just the query.';
+            .'Analyze patient survey responses and generate a precise PubMed search query. '
+            .'Prefer MeSH when obvious; include Boolean operators; avoid overly broad terms; no explanations, just the query.';
 
         try {
             $response = Prism::text()
@@ -151,6 +152,7 @@ class ProcessSurveyCompletion implements ShouldQueue
             return trim($response->text ?? '');
         } catch (Exception $e) {
             Log::error('LLM PubMed query generation failed', ['error' => $e->getMessage()]);
+
             return '';
         }
     }
@@ -173,13 +175,13 @@ class ProcessSurveyCompletion implements ShouldQueue
                     'api_key' => $apiKey,
                 ]));
 
-            if (!$search->successful()) {
+            if (! $search->successful()) {
                 throw new Exception("esearch failed with status {$search->status()}");
             }
 
             $data = $search->json();
-            $pmids = (array)data_get($data, 'esearchresult.idlist', []);
-            $count = (int)data_get($data, 'esearchresult.count', 0);
+            $pmids = (array) data_get($data, 'esearchresult.idlist', []);
+            $count = (int) data_get($data, 'esearchresult.count', 0);
 
             $articles = [];
             if ($pmids) {
@@ -194,9 +196,11 @@ class ProcessSurveyCompletion implements ShouldQueue
                     $sum = $summary->json();
                     foreach ($pmids as $pmid) {
                         $a = data_get($sum, "result.$pmid");
-                        if (!$a) continue;
+                        if (! $a) {
+                            continue;
+                        }
 
-                        $authors = $this->formatAuthors((array)data_get($a, 'authors', []));
+                        $authors = $this->formatAuthors((array) data_get($a, 'authors', []));
                         $journal = $a['fulljournalname'] ?? ($a['source'] ?? 'Unknown journal');
                         $title = trim($a['title'] ?? '') ?: 'No title available';
                         $pubdate = $a['pubdate'] ?? 'Unknown date';
@@ -209,7 +213,7 @@ class ProcessSurveyCompletion implements ShouldQueue
                         }
 
                         $articles[] = [
-                            'pmid' => (string)$pmid,
+                            'pmid' => (string) $pmid,
                             'title' => $title,
                             'authors' => $authors,
                             'journal' => $journal,
@@ -230,6 +234,7 @@ class ProcessSurveyCompletion implements ShouldQueue
             ];
         } catch (Exception $e) {
             Log::error('PubMed lookup failed', ['query' => $query, 'error' => $e->getMessage()]);
+
             return [
                 'query' => $query,
                 'count' => 0,
@@ -242,10 +247,13 @@ class ProcessSurveyCompletion implements ShouldQueue
 
     private function formatAuthors(array $authors): string
     {
-        if (!$authors) return 'No authors listed';
+        if (! $authors) {
+            return 'No authors listed';
+        }
         $top = array_slice($authors, 0, 3);
-        $names = array_map(fn($a) => $a['name'] ?? 'Unknown author', $top);
-        return count($authors) > 3 ? implode(', ', $names) . ', et al.' : implode(', ', $names);
+        $names = array_map(fn ($a) => $a['name'] ?? 'Unknown author', $top);
+
+        return count($authors) > 3 ? implode(', ', $names).', et al.' : implode(', ', $names);
     }
 
     /**
