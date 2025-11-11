@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AddQuestionDialog from '@/components/AddQuestionDialog.vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -20,7 +21,7 @@ import {
     rectangularSelection,
 } from '@codemirror/view';
 import { useClipboard } from '@vueuse/core';
-import { Bone, Check, CircleX, Copy, CopyCheck, Trash, WrapText, Upload } from 'lucide-vue-next';
+import { Bone, Check, CircleX, Copy, CopyCheck, Trash, Upload, WrapText } from 'lucide-vue-next';
 import { computed, HTMLAttributes, onMounted, ref, watch } from 'vue';
 
 const {
@@ -42,7 +43,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     'update:modelValue': [value?: string];
-    'upload': [];
+    upload: [];
 }>();
 const { copy, copied } = useClipboard();
 
@@ -239,22 +240,16 @@ const toClipboard = () => {
 
 const upload = () => {
     emit('upload');
-}
+};
 </script>
 
 <template>
-    <!--    <Alert v-if="errors.length" variant="destructive" class="mb-4">-->
-    <!--        <AlertCircle class="h-4 w-4" />-->
-    <!--        <AlertTitle>Error</AlertTitle>-->
-    <!--        <AlertDescription>{{ errors.join(', ') }}</AlertDescription>-->
-    <!--    </Alert>-->
-
     <div class="mb-2 flex flex-col">
         <Heading title="Fragebogen erstellen" description="Erstelle einen neuen Fragebogen mit einem JSON-Schema und einer Reihe von Fragen." />
 
-        <div class="mb-1 flex w-full h-5 items-center space-x-2 self-end">
+        <div class="mb-1 flex h-5 w-full items-center space-x-2 self-end">
             <div class="flex w-full items-center justify-between">
-                <span v-if="isValid" class="text-sm text-muted-foreground">Alles in Ordnung</span>
+                <span v-if="isValid" class="text-muted-foreground text-sm">Alles in Ordnung</span>
                 <span v-else class="text-sm text-red-600">Bitte Fehler korrigieren</span>
 
                 <Check v-if="isValid" class="mr-4 h-4 w-4 text-teal-600" />
@@ -264,6 +259,7 @@ const upload = () => {
             <Button variant="ghost" @click="reformat">
                 <WrapText class="h-4 w-4" />
             </Button>
+            <AddQuestionDialog />
             <Button variant="ghost" @click="skeleton">
                 <Bone class="h-4 w-4" />
             </Button>

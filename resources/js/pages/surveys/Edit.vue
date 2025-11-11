@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CodeMirrorEditor from '@/components/CodeMirrorEditor.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem, SharedData } from '@/types';
+import { type BreadcrumbItem, SharedData, Resource, Survey } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { useStorage } from '@vueuse/core';
 
@@ -23,7 +23,14 @@ const breadcrumbItems: BreadcrumbItem[] = [
 // bind object
 const state = useStorage(`${usePage<SharedData>().props.auth.practice.id}-yaml-create`, '', localStorage);
 
+const props = defineProps<{
+    survey: Resource<Survey>;
+}>();
+
+console.log(props.survey);
+
 const handleUpload = () => {
+
     router.post(
         route('practices.surveys.store', {
             practice: usePage<SharedData>().props.auth.practice.id,
@@ -37,6 +44,7 @@ const handleUpload = () => {
     <AppLayout :breadcrumbs="breadcrumbItems">
         <Head title="Fragebögen" />
         <div class="p-6">
+            <!--            <TipTapEditor v-model="state" />-->
             <CodeMirrorEditor v-model="state" @upload="handleUpload" />
         </div>
     </AppLayout>

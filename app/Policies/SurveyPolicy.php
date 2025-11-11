@@ -19,9 +19,9 @@ class SurveyPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Survey $survey): bool
+    public function view(User $user, Practice $practice, Survey $survey): bool
     {
-        return false;
+        return $user->practice_id === $practice->id;
     }
 
     /**
@@ -35,9 +35,9 @@ class SurveyPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Survey $survey): bool
+    public function update(User $user, Practice $practice, Survey $survey): bool
     {
-        return false;
+        return $user->practice_id === $practice->id;
     }
 
     /**

@@ -51,7 +51,7 @@ const handleClick = (type: string) => {
         <Head title="Fragebögen" />
 
         <div class="px-4 py-6">
-            <div class="flex justify-between">
+            <div class="flex justify-between items-start">
                 <Heading title="Fragebögen" description="Übersicht und Verwaltung der Fragebögen." />
                 <DropdownMenu>
                     <DropdownMenuTrigger>

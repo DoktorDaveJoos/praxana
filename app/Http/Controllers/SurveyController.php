@@ -72,7 +72,7 @@ class SurveyController extends Controller
                     'content' => $step['content'],
                 ]);
 
-                if (! empty($step['choices'])) {
+                if (!empty($step['choices'])) {
                     foreach ($step['choices'] as $choice) {
                         Choice::create([
                             'step_id' => $persistedStep->id,
@@ -92,17 +92,25 @@ class SurveyController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Survey $survey)
+    public function show(Practice $practice, Survey $survey)
     {
-        //
+        $this->authorize('view', [Survey::class, $practice, $survey]);
+
+        return inertia('surveys/Show', [
+            'survey' => SurveyResource::make($survey->load('steps')),
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Survey $survey)
+    public function edit(Practice $practice, Survey $survey)
     {
-        //
+        $this->authorize('update', [Survey::class, $practice, $survey]);
+
+        return inertia('surveys/Edit', [
+            'survey' => SurveyResource::make($survey->load('steps')),
+        ]);
     }
 
     /**

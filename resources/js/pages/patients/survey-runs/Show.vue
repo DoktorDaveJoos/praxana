@@ -61,6 +61,17 @@ const infoText = computed(() => {
               locale: de,
           })}`;
 });
+
+const getAIContent = () => {
+    try {
+        const json = JSON.parse(props.surveyRun.data.ai_analysis);
+        return json.summary;
+    } catch (e) {
+        console.error(e);
+        return '';
+    }
+}
+
 </script>
 
 <template>
@@ -68,7 +79,7 @@ const infoText = computed(() => {
         <Head title="Anamnese" />
 
         <PatientsLayout :patient="patient">
-            <div class="space-y-6">
+            <div class="space-y-6 py-6 px-4">
                 <HeadingSmall :title="surveyRun.data.name" description="Übersicht und Verwaltung der Anamnesedaten des Patienten." />
 
                 <div class="flex items-center space-x-2">
@@ -82,7 +93,7 @@ const infoText = computed(() => {
                         <AlertTitle>KI Analyse</AlertTitle>
                         <AlertDescription>
                             <Separator class="my-2" />
-                            <AlertMarkdownContent :content="JSON.parse(surveyRun.data.ai_analysis)?.summary" />
+                            <AlertMarkdownContent :content="getAIContent()" />
                         </AlertDescription>
                     </Alert>
 

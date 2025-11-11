@@ -12,6 +12,9 @@ const props = defineProps<{
 const page = usePage<SharedData>();
 
 function showSurvey() {
+
+    console.log(props.survey);
+
     router.visit(route('practices.surveys.show', {
         practice: page.props.auth.practice.id,
         survey: props.survey.id,
